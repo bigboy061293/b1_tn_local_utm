@@ -1,0 +1,177 @@
+openapi: 3.1.0
+info:
+  title: B1 – I-01 Cổng đăng ký bay của tỉnh và I-09 Bộ phận đào tạo
+  version: 0.1.0-draft
+  description: |
+    Bản nháp đề xuất của đội dự án. Đặc tả B1 v0.1 ghi I-01, I-09 "định nghĩa trong giai đoạn chuẩn bị",
+    nên các trường dưới đây cần được cổng của tỉnh và bộ phận đào tạo xác nhận.
+
+    - I-01 (hai chiều): cổng tỉnh đẩy hồ sơ đăng ký vào B1; B1 trả kết quả kiểm tra, lịch đã xếp, dữ liệu bay, báo cáo.
+      Chiều B1 → cổng tỉnh dùng webhook đã ký.
+    - I-09 (B1 cung cấp, chỉ đọc): lịch đã xếp và giờ bay thực tế của chuyến đào tạo.
+    - Xác thực: OAuth 2.0 client credentials, JWT ký số, thời hạn ≤1 giờ, có phạm vi quyền.
+    - Câu hỏi mở: định dạng hồ sơ gốc của cổng tỉnh; tỉnh có cần đẩy tệp giấy tờ hay chỉ số hiệu; giờ bay đào tạo
+      tính theo cất – hạ cánh hay theo armed.
+servers:
+  - url: https://api.b1.example.invalid/gateway
+security:
+  - oauth2: []
+paths:
+  /v1/applications:
+    post:
+      tags: [I-01]
+      operationId: submitApplication
+      summary: Cổng tỉnh gửi một hồ sơ đăng ký chuyến bay
+      security:
+        - oauth2: [province:applications.write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Application' }
+      responses:
+        '201':
+          description: Đã nhận; trả số thứ tự (chính thức hoặc tạm).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApplicationStatus' }
+        '400': { description: Sai lược đồ. }
+  /v1/applications/{applicationId}:
+    get:
+      tags: [I-01]
+      operationId: getApplication
+      summary: Trạng thái hồ sơ, kết quả kiểm tra và lịch đã xếp
+      security:
+        - oauth2: [province:applications.read]
+      parameters:
+        - { name: applicationId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApplicationStatus' }
+        '404': { description: Không có. }
+  /v1/training/flights:
+    get:
+      tags: [I-09]
+      operationId: listTrainingFlights
+      summary: Lịch đã xếp và giờ bay thực tế của chuyến đào tạo
+      security:
+        - oauth2: [training:read]
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string, format: date-time } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date-time } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/TrainingFlight' }
+webhooks:
+  applicationStatusChanged:
+    post:
+      tags: [I-01]
+      summary: B1 báo cổng tỉnh khi hồ sơ đổi trạng thái hoặc có báo cáo mới
+      description: Thân bản tin ký bằng JWS (khoá của B1); cổng tỉnh kiểm chữ ký trước khi dùng.
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApplicationStatus' }
+      responses:
+        '204': { description: Đã nhận. }
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.b1.example.invalid/oauth2/token
+          scopes:
+            province:applications.write: Gửi hồ sơ
+            province:applications.read: Đọc trạng thái hồ sơ, kết quả, báo cáo
+            training:read: Đọc lịch và giờ bay đào tạo
+  schemas:
+    Application:
+      type: object
+      required: [externalRef, customer, pilot, aircraft, priorityGroup, requestedSlots, documents]
+      properties:
+        externalRef: { type: string, description: Mã hồ sơ trên cổng tỉnh }
+        customer:
+          type: object
+          required: [unifiedId, name]
+          properties:
+            unifiedId: { type: string, description: Mã định danh thống nhất (I-08) }
+            name: { type: string }
+        pilot:
+          type: object
+          required: [unifiedId]
+          properties:
+            unifiedId: { type: string }
+            licenceNo: { type: string }
+        aircraft:
+          type: object
+          required: [uasId, vnRegistrationNo, mtowKg]
+          properties:
+            uasId: { type: string }
+            vnRegistrationNo: { type: string, description: Theo Thông tư 78/2026/TT-BCA }
+            mtowKg: { type: number }
+            maxSpeedMs: { type: number }
+        priorityGroup: { type: integer, minimum: 1, maximum: 4, description: Theo Phụ lục 05 Đề án Hành lang }
+        bvlos: { type: boolean }
+        training: { type: boolean, description: Chuyến của bộ phận đào tạo, hiện trong I-09 }
+        requestedSlots:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [date, slotIndex, blockIds]
+            properties:
+              date: { type: string, format: date }
+              slotIndex: { type: integer, minimum: 1, maximum: 4 }
+              blockIds: { type: array, items: { type: string, enum: [block-1, block-2, block-3, block-4] } }
+        documents:
+          type: array
+          items:
+            type: object
+            required: [kind, number, validTo]
+            properties:
+              kind: { type: string, enum: [registration, temporary_registration, technical_status, pilot_licence, test_permit, flight_permit, insurance] }
+              number: { type: string }
+              validTo: { type: string, format: date }
+              fileUrl: { type: string, format: uri }
+    ApplicationStatus:
+      type: object
+      required: [applicationId, externalRef, state]
+      properties:
+        applicationId: { type: string, format: uuid }
+        externalRef: { type: string }
+        queueNo: { type: string, pattern: '^HL-\d{8}-\d{4}$' }
+        provisional: { type: boolean }
+        state: { type: string, enum: [received, incomplete, blocked, queued, scheduled, rejected, flown, closed] }
+        blockReasons:
+          type: array
+          items: { type: object, properties: { rule: { type: string }, detail: { type: string } } }
+        scheduledSlots:
+          type: array
+          items: { type: object, properties: { startsAt: { type: string, format: date-time }, endsAt: { type: string, format: date-time }, blockIds: { type: array, items: { type: string } } } }
+        reports:
+          type: array
+          items: { type: object, properties: { kind: { type: string }, url: { type: string, format: uri }, sha256: { type: string } } }
+    TrainingFlight:
+      type: object
+      required: [flightId, scheduledStart, scheduledEnd]
+      properties:
+        flightId: { type: string, format: uuid }
+        pilotUnifiedId: { type: string }
+        scheduledStart: { type: string, format: date-time }
+        scheduledEnd: { type: string, format: date-time }
+        actualTakeoff: { type: string, format: date-time }
+        actualLanding: { type: string, format: date-time }
+        flightTimeSeconds: { type: integer }
