@@ -12,7 +12,8 @@ Kế hoạch phiên bản đầu tiên: xem tài liệu kế hoạch của dự 
 | `config/corridor/` | Dữ liệu cấu hình hành lang GeoJSON (tim tuyến, 4 khối, ràng buộc trần, 5 trạm RIS, lớp tham chiếu hồ Dầu Tiếng). **Sinh bằng `tools/gen_corridor.py`, không sửa tay.** |
 | `api/` | Hợp đồng OpenAPI 3.1 bản nháp cho các giao diện (hiện có I-07 telemetry). |
 | `docs/` | Mô hình dữ liệu và ghi chú thiết kế. |
-| `tests/` | Kiểm thử lược đồ. |
+| `twin/` | Bản sao số tối thiểu: phương tiện bay mô phỏng (I-07) và 5 trạm RIS ảo (I-06), có tiêm lỗi. |
+| `tests/` | Kiểm thử lược đồ và bản sao số. |
 
 ## Chạy kiểm tra
 
@@ -20,7 +21,12 @@ Kế hoạch phiên bản đầu tiên: xem tài liệu kế hoạch của dự 
 pip install -r requirements-dev.txt
 python tools/gen_corridor.py   # sinh lại GeoJSON, in bảng so độ dài khối với đặc tả
 pytest -q tests
+
+# bản sao số: 2 phương tiện, 2 phút, lệch 900 m từ giây 30 đến 60, mất C2 từ giây 80
+python -m twin.sim --duration 120 --count 2 --inject offset:30:60:900 --inject c2_lost:80:90 > out.jsonl
 ```
+
+Các lỗi tiêm được: `offset`, `c2_lost`, `low_battery` (phương tiện); `backhaul_cellular`, `station_down`, `ups` (trạm, giá trị là số thứ tự trạm 1–5, tương ứng mức suy giảm L1, L2, L4).
 
 Hình học theo KML v2.6 **dự thảo**, chưa phải vùng trời đã phê duyệt. Khi có bản KML mới, sửa toạ độ trong `tools/gen_corridor.py` và sinh lại; không sửa mã nghiệp vụ.
 
