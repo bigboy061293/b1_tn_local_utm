@@ -32,7 +32,18 @@ Thời gian phản hồi mỗi yêu cầu qua DSS: 78–272 ms trên máy thử.
 
 **Phát hiện:** hai khối kề nhau có chung cạnh (đường phân giác hoặc đường vuông góc), nên F3548 coi hai ý định bay đúng ranh khối là giao nhau. Muốn cho 2 chuyến đồng thời ở hai khối kề nhau (Mục 2.3), ý định bay phải co vào trong ranh khối một khoảng. Đề xuất: co vào bằng vùng đệm biên, tối thiểu 50 m (mức vượt ranh cho phép của AT-07), và chốt cùng D6 (độ rộng vùng bay bình thường và vùng dự phòng).
 
-## 3. Đối chiếu 4 điều kiện dùng thành phần có sẵn (Mục 3.4)
+## 3. Flight Blender làm USS hành lang (chưa kết luận)
+
+Flight Blender (Apache 2.0) được build từ mã nguồn, thay base image Wolfi bằng `python:3.12-slim` vì môi trường thử không tải được từ `cgr.dev`. Bộ kiểm thử dùng cấu hình đi kèm Flight Blender, viết cho `uss_qualifier` v0.30.0. Môi trường thử chỉ có sẵn `uss_qualifier` 0.38.0 và không tải được v0.30.0 do giới hạn lượt tải image, nên kết quả dưới đây **chưa dùng để kết luận được**:
+
+| Bộ | Kết quả | Ghi chú |
+|---|---|---|
+| F3548-21 | Không chạy được | Cấu hình v0.30.0 không tương thích với 0.38.0 (tên tài nguyên đã đổi) |
+| F3411-22a | 7.558 đạt, 94 trượt (99%) | 60 "Missing flight", 24 "Disconnected flight is shown as such", 8 do môi trường cục bộ. Chưa rõ trượt do Flight Blender hay do lệch phiên bản bộ kiểm thử |
+
+README của Flight Blender công bố qua cả hai bộ trong CI của dự án đó, với `uss_qualifier` v0.30.0; mình chưa kiểm chứng độc lập con số này. Cần chạy lại đúng phiên bản, ví dụ trong GitHub Actions của repo B1, nơi tải được image.
+
+## 4. Đối chiếu 4 điều kiện dùng thành phần có sẵn (Mục 3.4)
 
 | Điều kiện | InterUSS DSS | Ghi chú |
 |---|---|---|
@@ -41,7 +52,7 @@ Thời gian phản hồi mỗi yêu cầu qua DSS: 78–272 ms trên máy thử.
 | Thay được qua giao diện đã công bố | Đạt: giao diện DSS là API chuẩn F3548/F3411 | Có thể thay bằng DSS khác cùng chuẩn |
 | Thuyết minh trong hồ sơ thiết kế | Cần làm | Dùng tài liệu này làm cơ sở |
 
-## 4. Việc tiếp theo
+## 5. Việc tiếp theo
 
-1. Thử Flight Blender làm USS hành lang với cùng kịch bản và bộ kiểm thử, so với tự xây phần USS.
+1. Chạy lại bộ kiểm thử cho Flight Blender đúng phiên bản `uss_qualifier` v0.30.0 (Mục 3), rồi chạy kịch bản B1 với Flight Blender làm một trong hai USS.
 2. Network Remote ID toàn tuyến: đẩy telemetry từ bản sao số (`twin/sim.py`) vào USS qua F3411, kiểm ≥1 Hz trên 100% chiều dài (AT-05).
