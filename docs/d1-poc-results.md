@@ -2,7 +2,7 @@
 
 Ngày chạy: 25/11/2026. Cách dựng lại: [`poc/README.md`](../poc/README.md). Số liệu gốc: [`poc/results/`](../poc/results/).
 
-**Kết luận:** dùng lại InterUSS DSS cho DSS hành lang, chạy trên YugabyteDB thay cho CockroachDB (đã thử, kết quả như nhau). DSS qua bộ kiểm thử công khai của InterUSS cho cả F3548 và F3411; mọi kiểm tra trượt đều do môi trường thử cục bộ (tên máy nội bộ, http), không phải lỗi chức năng. Phần USS hành lang chưa đủ số liệu để quyết định: phép thử này dùng USS giả lập của InterUSS, chưa thử Flight Blender.
+**Kết luận:** dùng lại InterUSS DSS cho DSS hành lang, chạy trên YugabyteDB thay cho CockroachDB (đã thử, kết quả như nhau). DSS qua bộ kiểm thử công khai của InterUSS cho cả F3548 và F3411; mọi kiểm tra trượt đều do môi trường thử cục bộ (tên máy nội bộ, http), không phải lỗi chức năng. Với USS hành lang, Flight Blender qua gần hết bộ F3548 nhưng còn lỗi ở Network Remote ID (Mục 3).
 
 ## 1. Bộ kiểm thử InterUSS `uss_qualifier`
 
@@ -32,16 +32,16 @@ Thời gian phản hồi mỗi yêu cầu qua DSS: 78–272 ms trên máy thử.
 
 **Phát hiện:** hai khối kề nhau có chung cạnh (đường phân giác hoặc đường vuông góc), nên F3548 coi hai ý định bay đúng ranh khối là giao nhau. Muốn cho 2 chuyến đồng thời ở hai khối kề nhau (Mục 2.3), ý định bay phải co vào trong ranh khối một khoảng. Đề xuất: co vào bằng vùng đệm biên, tối thiểu 50 m (mức vượt ranh cho phép của AT-07), và chốt cùng D6 (độ rộng vùng bay bình thường và vùng dự phòng).
 
-## 3. Flight Blender làm USS hành lang (chưa kết luận)
+## 3. Flight Blender làm USS hành lang
 
-Flight Blender (Apache 2.0) được build từ mã nguồn, thay base image Wolfi bằng `python:3.12-slim` vì môi trường thử không tải được từ `cgr.dev`. Bộ kiểm thử dùng cấu hình đi kèm Flight Blender, viết cho `uss_qualifier` v0.30.0. Môi trường thử chỉ có sẵn `uss_qualifier` 0.38.0 và không tải được v0.30.0 do giới hạn lượt tải image, nên kết quả dưới đây **chưa dùng để kết luận được**:
+Flight Blender (Apache 2.0) được build từ mã nguồn, thay base image Wolfi bằng `python:3.12-slim` vì môi trường thử không tải được từ `cgr.dev` (xem `poc/flight_blender/`). Lần chạy cuối dùng đúng phiên bản bộ kiểm thử mà Flight Blender nhắm tới (`uss_qualifier` v0.30.0, DSS v0.22.0), qua script kiểm thử đi kèm Flight Blender.
 
-| Bộ | Kết quả | Ghi chú |
-|---|---|---|
-| F3548-21 | Không chạy được | Cấu hình v0.30.0 không tương thích với 0.38.0 (tên tài nguyên đã đổi) |
-| F3411-22a | 7.558 đạt, 94 trượt (99%) | 60 "Missing flight", 24 "Disconnected flight is shown as such", 8 do môi trường cục bộ. Chưa rõ trượt do Flight Blender hay do lệch phiên bản bộ kiểm thử |
+| Bộ | Đạt | Trượt | Nguyên nhân trượt |
+|---|---|---|---|
+| F3548-21 | 4.606 | 11 (mức đỏ) | Cả 11 lần là Flight Blender trả **HTTP 401** khi nhận yêu cầu lập kế hoạch bay; các lần khác cùng kịch bản đạt. Nhiều khả năng do xác thực trong môi trường thử (máy chủ OAuth giả lập được build lại từ mã nguồn DSS mới hơn), chưa xác nhận |
+| F3411-22a | 7.579 | 86 (mức vàng) | Chủ yếu "Missing flight" và "Disconnected flight is shown as such": chuyến bay không hiện ra khi hiển thị qua Flight Blender. Lỗi này lặp lại ở cả bộ kiểm thử v0.30.0 lẫn 0.38.0, trong khi USS giả lập của InterUSS không gặp, nên nhiều khả năng là hạn chế thật của Flight Blender ở phần Network Remote ID |
 
-README của Flight Blender công bố qua cả hai bộ trong CI của dự án đó, với `uss_qualifier` v0.30.0; mình chưa kiểm chứng độc lập con số này. Cần chạy lại đúng phiên bản, ví dụ trong GitHub Actions của repo B1, nơi tải được image.
+**Đánh giá:** Flight Blender lập kế hoạch bay theo F3548 tốt ở mức bộ kiểm thử, nhưng phần Network Remote ID còn lỗi mà B1 sẽ phải tự sửa, vì Remote ID toàn tuyến là yêu cầu bắt buộc (AT-05). Phương án hợp lý cho D1 là dùng Flight Blender làm nền phần xếp lịch và ý định bay, kèm một đầu việc sửa hoặc thay phần Remote ID. Cách khác là tự xây USS trên nền thư viện của InterUSS. Cần thêm một lần chạy có OAuth đúng phiên bản để loại trừ 11 lỗi 401.
 
 ## 4. Đối chiếu 4 điều kiện dùng thành phần có sẵn (Mục 3.4)
 
@@ -54,5 +54,5 @@ README của Flight Blender công bố qua cả hai bộ trong CI của dự án
 
 ## 5. Việc tiếp theo
 
-1. Chạy lại bộ kiểm thử cho Flight Blender đúng phiên bản `uss_qualifier` v0.30.0 (Mục 3), rồi chạy kịch bản B1 với Flight Blender làm một trong hai USS.
+1. Tìm nguyên nhân 11 lỗi 401 của Flight Blender (Mục 3), khoanh vùng lỗi Remote ID, rồi chạy kịch bản B1 với Flight Blender làm một trong hai USS.
 2. Network Remote ID toàn tuyến: đẩy telemetry từ bản sao số (`twin/sim.py`) vào USS qua F3411, kiểm ≥1 Hz trên 100% chiều dài (AT-05).
