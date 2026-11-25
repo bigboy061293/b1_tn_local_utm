@@ -29,6 +29,7 @@ Từ thư mục repo B1, khi hệ sinh thái đang chạy:
 ```bash
 python3 poc/two_uss_same_block.py              # ý định bay trùng đúng ranh khối
 python3 poc/two_uss_same_block.py --inset-m 50 # co ý định vào trong ranh khối 50 m
+python3 poc/netrid_full_route.py --speed 30    # Network Remote ID toàn tuyến, ~31 phút
 ```
 
 ### Ghi chú môi trường (môi trường cloud của dự án)
