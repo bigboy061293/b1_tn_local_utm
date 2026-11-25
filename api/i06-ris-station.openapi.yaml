@@ -1,0 +1,162 @@
+openapi: 3.1.0
+info:
+  title: B1 – I-06 Dữ liệu từ 5 trạm RIS
+  version: 0.1.0-draft
+  description: |
+    Bản nháp I-06 (Đặc tả B1 v0.1, Mục 3.2 lớp L1–L3, Mục 6). Máy tính tại trạm RIS (L1) chuẩn hoá dữ liệu
+    về lược đồ chung, gắn nhãn thời gian theo PTP, lưu và chuyển tiếp lên trung tâm qua mTLS trên đường truyền dẫn.
+
+    - Kênh chính là hệ thống truyền bản tin (L2, chốt theo D2). Chủ đề: `b1/v1/ris/{stationId}/{stream}`,
+      với `stream ∈ {adsb, rid, weather, spectrum, status}`. Endpoint HTTPS dưới đây dùng cho gửi bù và thử nghiệm.
+    - Dữ liệu an toàn (ADS-B, Remote ID, trạng thái trạm) đi lớp QoS riêng, ≥2 Mbit/s, không đi chung video.
+    - Gửi bù sau mất kết nối giữ nhãn thời gian gốc; trạm lưu ≥72 giờ dữ liệu không phải video.
+    - Ngân sách độ trễ trạm → trung tâm: ≤100 ms cáp quang, ≤300 ms 4G/5G.
+    - Camera/video không đi qua API này.
+servers:
+  - url: https://api.b1.example.invalid/ris
+security:
+  - mtls: []
+paths:
+  /v1/stations/{stationId}/records:
+    post:
+      operationId: postStationRecords
+      summary: Gửi một lô bản ghi đã chuẩn hoá từ trạm (gửi bù hoặc thử nghiệm)
+      parameters:
+        - name: stationId
+          in: path
+          required: true
+          schema: { $ref: '#/components/schemas/StationId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [records]
+              properties:
+                backfill: { type: boolean, default: false }
+                records:
+                  type: array
+                  minItems: 1
+                  maxItems: 1000
+                  items: { $ref: '#/components/schemas/StationRecord' }
+      responses:
+        '202':
+          description: Đã nhận.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [accepted]
+                properties:
+                  accepted: { type: integer }
+                  rejected:
+                    type: array
+                    items: { type: object, properties: { index: { type: integer }, reason: { type: string } } }
+        '400': { description: Sai lược đồ. }
+components:
+  securitySchemes:
+    mtls:
+      type: mutualTLS
+      description: Chứng chỉ thiết bị do hành lang cấp cho từng trạm.
+  schemas:
+    StationId:
+      type: string
+      enum: [RIS-1, RIS-2, RIS-3, RIS-4, RIS-5]
+    Timestamps:
+      type: object
+      description: Hai nhãn đầu do trạm gắn; nhãn thứ ba (ghi vào hệ thống) do trung tâm gắn. Xem D6.
+      required: [tStation]
+      properties:
+        tSource: { type: string, format: date-time, description: Thời điểm tại nguồn, nếu bản tin có }
+        tStation: { type: string, format: date-time, description: Thời điểm nhận tại trạm theo PTP }
+    Altitude:
+      type: object
+      required: [value, reference]
+      properties:
+        value: { type: number }
+        reference: { type: string, enum: [WGS84_ELLIPSOID, AMSL, AGL] }
+    Position:
+      type: object
+      required: [lat, lon]
+      properties:
+        lat: { type: number, minimum: -90, maximum: 90 }
+        lon: { type: number, minimum: -180, maximum: 180 }
+    StationRecord:
+      oneOf:
+        - $ref: '#/components/schemas/AdsbRecord'
+        - $ref: '#/components/schemas/BroadcastRidRecord'
+        - $ref: '#/components/schemas/WeatherRecord'
+        - $ref: '#/components/schemas/SpectrumRecord'
+        - $ref: '#/components/schemas/StationStatusRecord'
+      discriminator: { propertyName: stream }
+    AdsbRecord:
+      type: object
+      required: [stream, time, icao24, position, altitude, signalDbm]
+      properties:
+        stream: { const: adsb }
+        time: { $ref: '#/components/schemas/Timestamps' }
+        icao24: { type: string, pattern: '^[0-9A-F]{6}$', description: Địa chỉ ICAO 24 bit }
+        callsign: { type: string }
+        position: { $ref: '#/components/schemas/Position' }
+        altitude: { $ref: '#/components/schemas/Altitude' }
+        groundSpeed: { type: number }
+        track: { type: number }
+        signalDbm: { type: number, description: Dùng để giữ bản tin tín hiệu tốt nhất khi gộp vết }
+    BroadcastRidRecord:
+      type: object
+      required: [stream, time, transport, uasId, signalDbm]
+      properties:
+        stream: { const: rid }
+        time: { $ref: '#/components/schemas/Timestamps' }
+        transport: { type: string, enum: [bt4_legacy, bt5_long_range, wifi_nan, wifi_beacon_2g4, wifi_beacon_5g] }
+        uasId: { type: string }
+        uasIdType: { type: string, enum: [serial, registration, uuid, specific_session] }
+        operatorId: { type: string }
+        selfId: { type: string }
+        position: { $ref: '#/components/schemas/Position' }
+        altitude: { $ref: '#/components/schemas/Altitude' }
+        operatorPosition: { $ref: '#/components/schemas/Position' }
+        signalDbm: { type: number }
+        rawMessage: { type: string, contentEncoding: base64, description: Bản tin ASTM F3411 gốc để đối chiếu }
+    WeatherRecord:
+      type: object
+      required: [stream, time, kind]
+      properties:
+        stream: { const: weather }
+        time: { $ref: '#/components/schemas/Timestamps' }
+        kind: { type: string, enum: [measured, interpolated, extrapolated, forecast] }
+        heightAglM: { type: number, description: Lớp độ cao của phép đo }
+        windSpeedMs: { type: number }
+        windGustMs: { type: number }
+        windDirDeg: { type: number }
+        rainMmH: { type: number }
+        temperatureC: { type: number }
+        visibilityM: { type: number }
+        cloudBaseM: { type: number }
+        lightningKm: { type: number, description: Khoảng cách sét gần nhất }
+    SpectrumRecord:
+      type: object
+      required: [stream, time, bandMhz]
+      properties:
+        stream: { const: spectrum }
+        time: { $ref: '#/components/schemas/Timestamps' }
+        bandMhz: { type: array, items: { type: number }, minItems: 2, maxItems: 2 }
+        peakDbm: { type: number }
+        noiseFloorDbm: { type: number }
+        occupancyPercent: { type: number }
+    StationStatusRecord:
+      type: object
+      required: [stream, time, backhaul, power, ptpLocked]
+      properties:
+        stream: { const: status }
+        time: { $ref: '#/components/schemas/Timestamps' }
+        backhaul: { type: string, enum: [fiber, cellular, down], description: Dùng để xác định mức suy giảm L1–L2 }
+        power: { type: string, enum: [grid, ups, down], description: L4 khi chạy UPS }
+        upsMinutesLeft: { type: number }
+        ptpLocked: { type: boolean }
+        ptpOffsetNs: { type: number }
+        storageFreeGb: { type: number }
+        sensors:
+          type: object
+          additionalProperties: { type: string, enum: [ok, degraded, down] }

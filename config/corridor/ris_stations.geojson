@@ -1,0 +1,97 @@
+{
+ "type": "FeatureCollection",
+ "name": "ris_stations",
+ "crs_note": "WGS84 (EPSG:4326); toạ độ lon, lat; hình học dự thảo, chưa phải vùng trời đã phê duyệt",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "RIS-1",
+   "properties": {
+    "kind": "ris_station",
+    "name": "RIS-1",
+    "note": "Base Nam, khu bay Hưng Thuận",
+    "km_on_centerline": 0.0,
+    "offset_from_centerline_m": 0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     106.4437417,
+     11.1347056
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "RIS-2",
+   "properties": {
+    "kind": "ris_station",
+    "name": "RIS-2",
+    "note": "",
+    "km_on_centerline": 14.77,
+    "offset_from_centerline_m": 0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     106.3445194,
+     11.2254222
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "RIS-3",
+   "properties": {
+    "kind": "ris_station",
+    "name": "RIS-3",
+    "note": "",
+    "km_on_centerline": 29.86,
+    "offset_from_centerline_m": 0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     106.2861333,
+     11.3491472
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "RIS-4",
+   "properties": {
+    "kind": "ris_station",
+    "name": "RIS-4",
+    "note": "Lệch tim tuyến về phía tây",
+    "km_on_centerline": 42.12,
+    "offset_from_centerline_m": 2112
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     106.2245598,
+     11.4437557
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "RIS-5",
+   "properties": {
+    "kind": "ris_station",
+    "name": "RIS-5",
+    "note": "Base Bắc, khu bay Đồng Rùm",
+    "km_on_centerline": 54.71,
+    "offset_from_centerline_m": 0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     106.1974222,
+     11.5560361
+    ]
+   }
+  }
+ ]
+}

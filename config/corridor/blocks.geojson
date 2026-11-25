@@ -1,0 +1,171 @@
+{
+ "type": "FeatureCollection",
+ "name": "blocks",
+ "crs_note": "WGS84 (EPSG:4326); toạ độ lon, lat; hình học dự thảo, chưa phải vùng trời đã phê duyệt",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "block-1",
+   "properties": {
+    "kind": "operating_block",
+    "name": "Khối 1",
+    "km_start": 0.0,
+    "km_end": 14.77,
+    "length_km": 14.77,
+    "lateral_limit_m": 3000.0,
+    "status": "draft",
+    "source": "KML hành lang v2.6 dự thảo 30/10/2026"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       106.3671479,
+       11.2417048
+      ],
+      [
+       106.4624067,
+       11.1546039
+      ],
+      [
+       106.4250793,
+       11.1148058
+      ],
+      [
+       106.3218934,
+       11.2091376
+      ],
+      [
+       106.3671479,
+       11.2417048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "block-2",
+   "properties": {
+    "kind": "operating_block",
+    "name": "Khối 2",
+    "km_start": 14.77,
+    "km_end": 29.86,
+    "length_km": 15.1,
+    "lateral_limit_m": 3000.0,
+    "status": "draft",
+    "source": "KML hành lang v2.6 dự thảo 30/10/2026"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       106.3218934,
+       11.2091376
+      ],
+      [
+       106.2610091,
+       11.3381333
+      ],
+      [
+       106.3112592,
+       11.3601587
+      ],
+      [
+       106.3671479,
+       11.2417048
+      ],
+      [
+       106.3218934,
+       11.2091376
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "block-3",
+   "properties": {
+    "kind": "operating_block",
+    "name": "Khối 3",
+    "km_start": 29.86,
+    "km_end": 42.12,
+    "length_km": 12.25,
+    "lateral_limit_m": 3000.0,
+    "status": "draft",
+    "source": "KML hành lang v2.6 dự thảo 30/10/2026"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       106.2610091,
+       11.3381333
+      ],
+      [
+       106.2170665,
+       11.4406285
+      ],
+      [
+       106.2677179,
+       11.4617618
+      ],
+      [
+       106.3112592,
+       11.3601587
+      ],
+      [
+       106.2610091,
+       11.3381333
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "block-4",
+   "properties": {
+    "kind": "operating_block",
+    "name": "Khối 4",
+    "km_start": 42.12,
+    "km_end": 54.71,
+    "length_km": 12.59,
+    "lateral_limit_m": 3000.0,
+    "status": "draft",
+    "source": "KML hành lang v2.6 dự thảo 30/10/2026"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       106.2170665,
+       11.4406285
+      ],
+      [
+       106.1720888,
+       11.5454652
+      ],
+      [
+       106.2227573,
+       11.5666046
+      ],
+      [
+       106.2677179,
+       11.4617618
+      ],
+      [
+       106.2170665,
+       11.4406285
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

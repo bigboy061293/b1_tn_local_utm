@@ -1,0 +1,42 @@
+{
+ "type": "FeatureCollection",
+ "name": "centerline",
+ "crs_note": "WGS84 (EPSG:4326); toạ độ lon, lat; hình học dự thảo, chưa phải vùng trời đã phê duyệt",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "centerline",
+   "properties": {
+    "kind": "centerline",
+    "length_km": 54.71,
+    "vertices": [
+     "RIS-1",
+     "RIS-2",
+     "RIS-3",
+     "RIS-5"
+    ]
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      106.4437417,
+      11.1347056
+     ],
+     [
+      106.3445194,
+      11.2254222
+     ],
+     [
+      106.2861333,
+      11.3491472
+     ],
+     [
+      106.1974222,
+      11.5560361
+     ]
+    ]
+   }
+  }
+ ]
+}

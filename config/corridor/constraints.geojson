@@ -1,0 +1,111 @@
+{
+ "type": "FeatureCollection",
+ "name": "constraints",
+ "crs_note": "WGS84 (EPSG:4326); toạ độ lon, lat; hình học dự thảo, chưa phải vùng trời đã phê duyệt",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "ceiling-approach",
+   "properties": {
+    "kind": "airspace_constraint",
+    "name": "Trần trong vùng tiếp cận Tân Sơn Nhất",
+    "km_start": 0.0,
+    "km_end": 34.0,
+    "ceiling": {
+     "value": 600,
+     "unit": "m",
+     "reference": "AMSL",
+     "inclusive": false
+    },
+    "source": "KML v2.6; Đặc tả B1 v0.1 Mục 2.2"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       106.2610091,
+       11.3381333
+      ],
+      [
+       106.2460517,
+       11.3730289
+      ],
+      [
+       106.2966922,
+       11.3941584
+      ],
+      [
+       106.3112592,
+       11.3601587
+      ],
+      [
+       106.3671479,
+       11.2417048
+      ],
+      [
+       106.4624067,
+       11.1546039
+      ],
+      [
+       106.4250793,
+       11.1148058
+      ],
+      [
+       106.3218934,
+       11.2091376
+      ],
+      [
+       106.2610091,
+       11.3381333
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "ceiling-outside",
+   "properties": {
+    "kind": "airspace_constraint",
+    "name": "Trần ngoài vùng tiếp cận",
+    "km_start": 34.0,
+    "km_end": 54.71,
+    "ceiling": {
+     "value": 1000,
+     "unit": "m",
+     "reference": "AGL",
+     "inclusive": true
+    },
+    "source": "KML v2.6; Đặc tả B1 v0.1 Mục 2.2"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       106.2227573,
+       11.5666046
+      ],
+      [
+       106.2966922,
+       11.3941584
+      ],
+      [
+       106.2460517,
+       11.3730289
+      ],
+      [
+       106.1720888,
+       11.5454652
+      ],
+      [
+       106.2227573,
+       11.5666046
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
+      - name: Sinh lại GeoJSON hành lang và so độ dài khối với đặc tả
+        run: python tools/gen_corridor.py
+      - name: GeoJSON trong repo khớp với bản sinh lại
+        run: git diff --exit-code config/corridor
+      - name: Kiểm tra hợp đồng OpenAPI
+        run: |
+          for f in api/*.openapi.yaml; do
+            python -c "import sys; from openapi_spec_validator import validate; from openapi_spec_validator.readers import read_from_filename; validate(read_from_filename(sys.argv[1])[0]); print('OK', sys.argv[1])" "$f"
+          done
+      - run: pytest -q tests
