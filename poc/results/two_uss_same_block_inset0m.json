@@ -1,0 +1,48 @@
+{
+ "run_at": "2026-11-25T08:08:18.918874+00:00",
+ "priority": 10,
+ "inset_m": 0.0,
+ "passed": false,
+ "results": [
+  {
+   "case": "1. A xin Khối 1",
+   "uss": "A",
+   "block": "block-1",
+   "expected": "Completed",
+   "got": "Completed",
+   "status": "Planned",
+   "latency_ms": 147.6,
+   "notes": null
+  },
+  {
+   "case": "2. B xin Khối 1 trùng giờ, cùng bậc",
+   "uss": "B",
+   "block": "block-1",
+   "expected": "Rejected",
+   "got": "Rejected",
+   "status": "NotPlanned",
+   "latency_ms": 96.3,
+   "notes": "Requested flight (priority 10) intersected uss1's operational intent 83b865f6-f05b-4d8c-af1f-d2751e203167 (priority 10)"
+  },
+  {
+   "case": "3. B xin Khối 1 sau khung của A",
+   "uss": "B",
+   "block": "block-1",
+   "expected": "Completed",
+   "got": "Completed",
+   "status": "Planned",
+   "latency_ms": 174.0,
+   "notes": null
+  },
+  {
+   "case": "4. B xin Khối 2 cùng giờ với A",
+   "uss": "B",
+   "block": "block-2",
+   "expected": "Completed",
+   "got": "Rejected",
+   "status": "NotPlanned",
+   "latency_ms": 77.6,
+   "notes": "Requested flight (priority 10) intersected uss1's operational intent 83b865f6-f05b-4d8c-af1f-d2751e203167 (priority 10)"
+  }
+ ]
+}
