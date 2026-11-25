@@ -2,14 +2,57 @@
  "run_date": "2026-11-25",
  "dss_image": "interuss/dss:v0.24.0",
  "monitoring_commit": "4dc36dd9cb7cae45a97e3e0506aff99388de722b",
- "datastore": "CockroachDB v24.1.3, 2 DSS instances",
+ "datastore": "CockroachDB v24.1.3 (lần 1) và YugabyteDB 2025.1.2.1 (lần 2), 2 DSS instances",
  "suites": [
-  {"config": "configurations.dev.f3548_self_contained", "standard": "ASTM F3548-21", "duration_s": 83,
-   "passed_checks": 6324, "failed_checks": 4,
-   "failures": [{"check": "DSS instance is publicly addressable", "severity": "Medium", "count": 4, "cause": "local test hostnames (*.localutm)"}]},
-  {"config": "configurations.dev.netrid_v22a", "standard": "ASTM F3411-22a", "duration_s": 431,
-   "passed_checks": 10711, "failed_checks": 7,
-   "failures": [{"check": "DSS instance is publicly addressable", "severity": "Medium", "count": 4, "cause": "local test hostnames (*.localutm)"},
-                {"check": "All interactions happen over https", "severity": "Medium", "count": 3, "cause": "local ecosystem runs plain http"}]}
- ]
+  {
+   "config": "configurations.dev.f3548_self_contained",
+   "standard": "ASTM F3548-21",
+   "duration_s": 83,
+   "passed_checks": 6324,
+   "failed_checks": 4,
+   "failures": [
+    {
+     "check": "DSS instance is publicly addressable",
+     "severity": "Medium",
+     "count": 4,
+     "cause": "local test hostnames (*.localutm)"
+    }
+   ]
+  },
+  {
+   "config": "configurations.dev.netrid_v22a",
+   "standard": "ASTM F3411-22a",
+   "duration_s": 431,
+   "passed_checks": 10711,
+   "failed_checks": 7,
+   "failures": [
+    {
+     "check": "DSS instance is publicly addressable",
+     "severity": "Medium",
+     "count": 4,
+     "cause": "local test hostnames (*.localutm)"
+    },
+    {
+     "check": "All interactions happen over https",
+     "severity": "Medium",
+     "count": 3,
+     "cause": "local ecosystem runs plain http"
+    }
+   ]
+  }
+ ],
+ "ybdb_rerun": {
+  "date": "2026-11-25",
+  "f3548": {
+   "duration_s": 89,
+   "passed_checks": 6324,
+   "failed_checks": 4
+  },
+  "netrid_v22a": {
+   "duration_s": 426,
+   "passed_checks": 10711,
+   "failed_checks": 7
+  },
+  "note": "Cùng các kiểm tra trượt do môi trường như lần chạy CockroachDB"
+ }
 }

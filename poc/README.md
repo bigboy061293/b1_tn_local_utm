@@ -10,14 +10,15 @@ Kết quả và đánh giá cho quyết định D1: [`docs/d1-poc-results.md`](.
 |---|---|---|
 | InterUSS DSS (image `interuss/dss`) | v0.24.0 | Apache 2.0 |
 | InterUSS monitoring (`uss_qualifier`, `mock_uss`) | 0.38.0, commit `4dc36dd9` | Apache 2.0 |
-| CockroachDB (CSDL của DSS trong thử nghiệm) | v24.1.3 | BSL 1.1, **chỉ dùng thử**; vận hành dùng YugabyteDB |
+| CockroachDB (CSDL của DSS, lần chạy 1) | v24.1.3 | BSL 1.1, **chỉ dùng thử** |
+| YugabyteDB (CSDL của DSS, lần chạy 2, đề xuất cho vận hành) | 2025.1.2.1 | Apache 2.0 |
 
 ## Dựng lại
 
 ```bash
 git clone https://github.com/interuss/monitoring && cd monitoring
 git checkout 4dc36dd9cb7cae45a97e3e0506aff99388de722b
-DSS_IMAGE=interuss/dss:v0.24.0 NUM_USS=2 build/dev/run_locally.sh up --wait
+DB_TYPE=ybdb DSS_IMAGE=interuss/dss:v0.24.0 NUM_USS=2 build/dev/run_locally.sh up --wait   # bỏ DB_TYPE để dùng CockroachDB
 ./monitoring/mock_uss/run_locally.sh up --wait --wait-timeout 180 -d
 CI=true monitoring/uss_qualifier/run_locally.sh configurations.dev.f3548_self_contained
 CI=true monitoring/uss_qualifier/run_locally.sh configurations.dev.netrid_v22a

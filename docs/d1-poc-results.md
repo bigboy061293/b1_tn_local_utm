@@ -2,7 +2,7 @@
 
 Ngày chạy: 25/11/2026. Cách dựng lại: [`poc/README.md`](../poc/README.md). Số liệu gốc: [`poc/results/`](../poc/results/).
 
-**Kết luận:** dùng lại InterUSS DSS cho DSS hành lang, chạy trên YugabyteDB thay cho CockroachDB. DSS qua bộ kiểm thử công khai của InterUSS cho cả F3548 và F3411; mọi kiểm tra trượt đều do môi trường thử cục bộ (tên máy nội bộ, http), không phải lỗi chức năng. Phần USS hành lang chưa đủ số liệu để quyết định: phép thử này dùng USS giả lập của InterUSS, chưa thử Flight Blender.
+**Kết luận:** dùng lại InterUSS DSS cho DSS hành lang, chạy trên YugabyteDB thay cho CockroachDB (đã thử, kết quả như nhau). DSS qua bộ kiểm thử công khai của InterUSS cho cả F3548 và F3411; mọi kiểm tra trượt đều do môi trường thử cục bộ (tên máy nội bộ, http), không phải lỗi chức năng. Phần USS hành lang chưa đủ số liệu để quyết định: phép thử này dùng USS giả lập của InterUSS, chưa thử Flight Blender.
 
 ## 1. Bộ kiểm thử InterUSS `uss_qualifier`
 
@@ -10,6 +10,8 @@ Ngày chạy: 25/11/2026. Cách dựng lại: [`poc/README.md`](../poc/README.md
 |---|---|---|---|---|---|
 | `f3548_self_contained` | ASTM F3548-21 | 1,4 phút | 6.324 | 4 | DSS dùng tên máy nội bộ, không có địa chỉ công khai |
 | `netrid_v22a` | ASTM F3411-22a | 7,2 phút | 10.711 | 7 | Như trên (4); hệ sinh thái cục bộ chạy http thay vì https (3) |
+
+Chạy lại với DSS trên **YugabyteDB 2025.1.2.1** (Apache 2.0): kết quả giống hệt (F3548 6.324 đạt / 4 trượt, 1,5 phút; F3411 10.711 đạt / 7 trượt, 7,1 phút; cùng nguyên nhân). Kịch bản B1 ở Mục 2 cũng đạt cả 4 trường hợp với ý định co vào 50 m. Như vậy đổi CSDL không làm thay đổi hành vi DSS.
 
 Hai lỗi này sẽ hết khi triển khai có tên miền và TLS thật; cần chạy lại bộ kiểm thử trên môi trường đó trước nghiệm thu.
 
@@ -41,6 +43,5 @@ Thời gian phản hồi mỗi yêu cầu qua DSS: 78–272 ms trên máy thử.
 
 ## 4. Việc tiếp theo
 
-1. Chạy lại bộ kiểm thử với DSS trên YugabyteDB (bộ chạy của InterUSS hỗ trợ `DB_TYPE=ybdb`).
-2. Thử Flight Blender làm USS hành lang với cùng kịch bản và bộ kiểm thử, so với tự xây phần USS.
-3. Network Remote ID toàn tuyến: đẩy telemetry từ bản sao số (`twin/sim.py`) vào USS qua F3411, kiểm ≥1 Hz trên 100% chiều dài (AT-05).
+1. Thử Flight Blender làm USS hành lang với cùng kịch bản và bộ kiểm thử, so với tự xây phần USS.
+2. Network Remote ID toàn tuyến: đẩy telemetry từ bản sao số (`twin/sim.py`) vào USS qua F3411, kiểm ≥1 Hz trên 100% chiều dài (AT-05).
