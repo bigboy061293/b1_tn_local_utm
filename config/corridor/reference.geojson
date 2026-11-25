@@ -1,0 +1,103 @@
+{
+ "type": "FeatureCollection",
+ "name": "reference",
+ "crs_note": "WGS84 (EPSG:4326); toạ độ lon, lat; hình học dự thảo, chưa phải vùng trời đã phê duyệt",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "lake-dau-tieng-1",
+   "properties": {
+    "kind": "reference_layer",
+    "name": "Mặt nước hồ Dầu Tiếng trên tim tuyến",
+    "km_start": 31.17,
+    "km_end": 40.48,
+    "note": "Chỉ là lớp tham chiếu; khối 3D chưa trừ phạm vi bảo vệ hồ"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      106.281471,
+      11.3600275
+     ],
+     [
+      106.2482393,
+      11.4375573
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "lake-dau-tieng-2",
+   "properties": {
+    "kind": "reference_layer",
+    "name": "Mặt nước hồ Dầu Tiếng trên tim tuyến",
+    "km_start": 41.78,
+    "km_end": 45.11,
+    "note": "Chỉ là lớp tham chiếu; khối 3D chưa trừ phạm vi bảo vệ hồ"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      106.2435977,
+      11.448383
+     ],
+     [
+      106.2317066,
+      11.4761132
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "lake-dau-tieng-3",
+   "properties": {
+    "kind": "reference_layer",
+    "name": "Mặt nước hồ Dầu Tiếng trên tim tuyến",
+    "km_start": 48.95,
+    "km_end": 48.98,
+    "note": "Chỉ là lớp tham chiếu; khối 3D chưa trừ phạm vi bảo vệ hồ"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      106.2179918,
+      11.50809
+     ],
+     [
+      106.2178846,
+      11.5083398
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "lake-dau-tieng-4",
+   "properties": {
+    "kind": "reference_layer",
+    "name": "Mặt nước hồ Dầu Tiếng trên tim tuyến",
+    "km_start": 49.64,
+    "km_end": 49.78,
+    "note": "Chỉ là lớp tham chiếu; khối 3D chưa trừ phạm vi bảo vệ hồ"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      106.2155271,
+      11.5138358
+     ],
+     [
+      106.215027,
+      11.5150016
+     ]
+    ]
+   }
+  }
+ ]
+}

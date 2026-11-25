@@ -1,0 +1,7 @@
+shapely==2.2.0
+pyproj==3.8.0
+numpy
+openapi-spec-validator
+jsonschema
+pyyaml
+pytest
