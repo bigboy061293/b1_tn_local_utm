@@ -1,0 +1,107 @@
+{
+  "realm": "b1",
+  "enabled": true,
+  "displayName": "B1 Tây Ninh Local UTM",
+  "sslRequired": "external",
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "vi",
+    "en"
+  ],
+  "defaultLocale": "vi",
+  "bruteForceProtected": true,
+  "otpPolicyType": "totp",
+  "clients": [
+    {
+      "clientId": "b1-portal",
+      "name": "Cổng khách hàng B1",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "http://localhost:8000/portal/*"
+      ],
+      "webOrigins": [
+        "http://localhost:8000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:8000/portal/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience b1-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "b1-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "amr",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-amr-mapper",
+          "config": {
+            "access.token.claim": "true",
+            "id.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "6f1d1c3e-0000-4000-8000-000000000001",
+      "username": "kh-demo",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Khách",
+      "lastName": "Thử nghiệm",
+      "email": "kh-demo@b1.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "kh-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "6f1d1c3e-0000-4000-8000-000000000002",
+      "username": "truong-bp",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Trưởng",
+      "lastName": "Bộ phận",
+      "email": "truong-bp@b1.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "truong-bp",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "6f1d1c3e-0000-4000-8000-000000000003",
+      "username": "ks-cntt",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Kỹ sư",
+      "lastName": "CNTT",
+      "email": "ks-cntt@b1.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "ks-cntt",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "displayNameHtml": "B1 Tây Ninh Local UTM <small>(môi trường phát triển, mật khẩu chỉ dùng thử)</small>"
+}

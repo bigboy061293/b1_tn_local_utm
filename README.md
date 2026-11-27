@@ -20,11 +20,15 @@ Kế hoạch phiên bản đầu tiên: xem tài liệu kế hoạch của dự 
 ## Chạy dịch vụ B1 cục bộ
 
 ```bash
-python tools/dev_token.py --sub it-admin --mfa > /dev/null   # sinh khoá phát triển vào .dev/
-docker compose up -d --build                                  # PostGIS + dịch vụ tại http://localhost:8000/docs
-docker compose exec api python -m b1.admin bootstrap --issuer https://idp.b1.local/realms/b1 --subject it-admin --name "Quản trị"
-curl -H "Authorization: Bearer $(python tools/dev_token.py --sub it-admin --mfa)" localhost:8000/v1/me
+docker compose up -d --build        # PostGIS, Keycloak (realm phát triển), dịch vụ B1 tại http://localhost:8000
+B1_DATABASE_URL=postgresql+psycopg://b1:b1@localhost:5432/b1 python tools/dev_seed.py   # dữ liệu thử
 ```
+
+- Cổng khách hàng: http://localhost:8000/portal/, đăng nhập `kh-demo` / `kh-demo` (xem `docs/customer-portal.md`).
+- Tài liệu API: http://localhost:8000/docs. Lấy token thử bằng tài khoản Keycloak phát triển:
+  `curl -d grant_type=password -d client_id=b1-portal -d username=kh-demo -d password=kh-demo localhost:8080/realms/b1/protocol/openid-connect/token`
+- Không dùng Keycloak: đặt `B1_JWKS_FILE=.dev/jwks.json` và lấy token bằng `python tools/dev_token.py --sub <sub> --mfa`;
+  tạo tài khoản quản trị đầu tiên bằng `python -m b1.admin bootstrap`.
 
 ## Chạy kiểm tra
 

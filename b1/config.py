@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     jwks_url: str | None = None   # lấy khoá công khai từ bên cấp danh tính
     jwks_file: str | None = None  # hoặc tệp JWKS cục bộ (phát triển, kiểm thử)
 
+    # Cổng khách hàng (trình duyệt) đăng nhập theo OIDC Authorization Code + PKCE với client công khai này.
+    portal_client_id: str = "b1-portal"
+
     # Xác thực đa yếu tố: bên cấp danh tính ghi phương thức vào claim `amr` (RFC 8176).
     mfa_amr_values: list[str] = ["mfa", "otp", "hwk", "swk"]
     # Mọi truy cập từ xa phải có MFA (Đặc tả Mục 1.1). Bật khi B1 mở ra ngoài mạng vận hành.

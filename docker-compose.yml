@@ -1,4 +1,7 @@
-# Môi trường phát triển cục bộ: CSDL + dịch vụ B1. Token phát triển: python tools/dev_token.py (xem README).
+# Môi trường phát triển cục bộ: CSDL, bên cấp danh tính (Keycloak), dịch vụ B1 kèm cổng khách hàng.
+#   docker compose up -d --build
+#   python tools/dev_seed.py      # tạo dữ liệu thử: khách hàng kh-demo, Trưởng bộ phận, quản trị
+#   mở http://localhost:8000/portal/ , đăng nhập kh-demo / kh-demo
 services:
   db:
     image: postgis/postgis:17-3.5-alpine
@@ -11,12 +14,25 @@ services:
       test: ["CMD-SHELL", "pg_isready -U b1"]
       interval: 2s
       retries: 30
+  keycloak:
+    image: keycloak/keycloak:26.4
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://localhost:8080   # token luôn mang iss http://localhost:8080/realms/b1
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HEALTH_ENABLED: "true"
+    volumes: ["./config/keycloak:/opt/keycloak/data/import:ro"]
+    ports: ["8080:8080"]
   api:
     build: .
     environment:
       B1_DATABASE_URL: postgresql+psycopg://b1:b1@db:5432/b1
-      B1_JWKS_FILE: /dev-keys/jwks.json
-    volumes: ["./.dev:/dev-keys:ro"]
+      B1_OIDC_ISSUER: http://localhost:8080/realms/b1
+      B1_JWKS_URL: http://keycloak:8080/realms/b1/protocol/openid-connect/certs
+      B1_PORTAL_CLIENT_ID: b1-portal
     ports: ["8000:8000"]
     depends_on:
       db: { condition: service_healthy }
+      keycloak: { condition: service_started }
