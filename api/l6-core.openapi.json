@@ -1,0 +1,798 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "B1 Tây Ninh Local UTM",
+  "version": "0.2.0-dev"
+ },
+ "paths": {
+  "/v1/me": {
+   "get": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Me",
+    "operationId": "me_v1_me_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Me V1 Me Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/organizations": {
+   "post": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Create Org",
+    "operationId": "create_org_v1_organizations_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrgIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Create Org V1 Organizations Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users": {
+   "post": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Create User",
+    "operationId": "create_user_v1_users_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Create User V1 Users Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users/{user_id}": {
+   "get": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Get User",
+    "operationId": "get_user_v1_users__user_id__get",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get User V1 Users  User Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users/{user_id}/roles": {
+   "post": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Grant Role",
+    "operationId": "grant_role_v1_users__user_id__roles_post",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RoleIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Grant Role V1 Users  User Id  Roles Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users/{user_id}/roles/{assignment_id}": {
+   "delete": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Revoke Role",
+    "operationId": "revoke_role_v1_users__user_id__roles__assignment_id__delete",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     },
+     {
+      "name": "assignment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Assignment Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Revoke Role V1 Users  User Id  Roles  Assignment Id  Delete"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users/{user_id}/disable": {
+   "post": {
+    "tags": [
+     "Danh tính"
+    ],
+    "summary": "Disable User",
+    "operationId": "disable_user_v1_users__user_id__disable_post",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Disable User V1 Users  User Id  Disable Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/audit": {
+   "get": {
+    "tags": [
+     "Nhật ký truy vết"
+    ],
+    "summary": "List Audit",
+    "operationId": "list_audit_v1_audit_get",
+    "parameters": [
+     {
+      "name": "after_seq",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 0,
+       "title": "After Seq"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 100,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "action",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Action"
+      }
+     },
+     {
+      "name": "target_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Target Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Audit V1 Audit Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/audit/verify": {
+   "get": {
+    "tags": [
+     "Nhật ký truy vết"
+    ],
+    "summary": "Verify",
+    "operationId": "verify_v1_audit_verify_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Verify V1 Audit Verify Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/flights": {
+   "post": {
+    "tags": [
+     "Chuyến bay"
+    ],
+    "summary": "Create Flight",
+    "description": "Tạm thời: bước 2c sẽ tạo chuyến từ yêu cầu bay đã được xếp lịch.",
+    "operationId": "create_flight_v1_flights_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FlightIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Create Flight V1 Flights Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/flights/{flight_id}": {
+   "get": {
+    "tags": [
+     "Chuyến bay"
+    ],
+    "summary": "Get Flight",
+    "operationId": "get_flight_v1_flights__flight_id__get",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Flight V1 Flights  Flight Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/flights/{flight_id}/takeoff-clearance": {
+   "post": {
+    "tags": [
+     "Chuyến bay"
+    ],
+    "summary": "Clear Takeoff",
+    "description": "F-04: chỉ Cán bộ an toàn bay trực ban và Trưởng bộ phận, có MFA. Không phải phép bay (Đặc tả Mục 1).",
+    "operationId": "clear_takeoff_v1_flights__flight_id__takeoff_clearance_post",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Clear Takeoff V1 Flights  Flight Id  Takeoff Clearance Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/disclaimers": {
+   "get": {
+    "tags": [
+     "Chung"
+    ],
+    "summary": "Disclaimers",
+    "operationId": "disclaimers_v1_disclaimers_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Disclaimers V1 Disclaimers Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "FlightIn": {
+    "properties": {
+     "request_ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Request Ref"
+     },
+     "uas_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Uas Id"
+     }
+    },
+    "type": "object",
+    "title": "FlightIn"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "OrgIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "pattern": "^(corridor|customer|regulator|auditor)$",
+      "title": "Kind"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "kind"
+    ],
+    "title": "OrgIn"
+   },
+   "Role": {
+    "type": "string",
+    "enum": [
+     "corridor_head",
+     "duty_safety_officer",
+     "radio_network_engineer",
+     "it_engineer",
+     "flight_test_technician",
+     "customer_operator",
+     "customer_training",
+     "regulator",
+     "low_altitude_coordination",
+     "auditor"
+    ],
+    "title": "Role"
+   },
+   "RoleIn": {
+    "properties": {
+     "role": {
+      "$ref": "#/components/schemas/Role"
+     },
+     "valid_to": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Valid To"
+     }
+    },
+    "type": "object",
+    "required": [
+     "role"
+    ],
+    "title": "RoleIn"
+   },
+   "UserIn": {
+    "properties": {
+     "issuer": {
+      "type": "string",
+      "title": "Issuer"
+     },
+     "subject": {
+      "type": "string",
+      "title": "Subject"
+     },
+     "display_name": {
+      "type": "string",
+      "title": "Display Name"
+     },
+     "org_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Org Id"
+     },
+     "expires_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Expires At"
+     },
+     "roles": {
+      "items": {
+       "$ref": "#/components/schemas/Role"
+      },
+      "type": "array",
+      "title": "Roles",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "issuer",
+     "subject",
+     "display_name"
+    ],
+    "title": "UserIn"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   }
+  },
+  "securitySchemes": {
+   "oidc": {
+    "type": "openIdConnect",
+    "openIdConnectUrl": "https://idp.b1.local/realms/b1/.well-known/openid-configuration"
+   }
+  }
+ },
+ "security": [
+  {
+   "oidc": []
+  }
+ ]
+}

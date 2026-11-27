@@ -3,19 +3,32 @@
 Phần mềm đăng ký và quản lý bay tầm thấp cấp tỉnh cho hành lang thử nghiệm phương tiện bay không người lái Tây Ninh.
 B1 không cấp phép bay, không điều hành bay, không thay AIP/NOTAM; "phê duyệt" trên B1 là phê duyệt lịch bay nội bộ.
 
-Kế hoạch phiên bản đầu tiên: xem tài liệu kế hoạch của dự án. Repo này đang ở **bước 0 (nền tảng)**.
+Kế hoạch phiên bản đầu tiên: xem tài liệu kế hoạch của dự án. Repo này đang ở **bước 2** (danh tính, đăng ký, xếp lịch).
 
 ## Cấu trúc
 
 | Thư mục | Nội dung |
 |---|---|
+| `b1/` | Dịch vụ B1 (lớp L6), Python + FastAPI + PostgreSQL. Mỗi dịch vụ một schema CSDL riêng: `identity`, `audit`, `operations`. |
 | `config/corridor/` | Dữ liệu cấu hình hành lang GeoJSON (tim tuyến, 4 khối, ràng buộc trần, 5 trạm RIS, lớp tham chiếu hồ Dầu Tiếng). **Sinh bằng `tools/gen_corridor.py`, không sửa tay.** |
-| `api/` | Hợp đồng OpenAPI 3.1 bản nháp cho các giao diện (hiện có I-07 telemetry). |
-| `docs/` | Mô hình dữ liệu và ghi chú thiết kế. |
+| `api/` | Hợp đồng OpenAPI: bản nháp I-01/I-09, I-06, I-07; `l6-core.openapi.json` xuất từ mã dịch vụ (`tools/export_openapi.py`). |
+| `docs/` | Mô hình dữ liệu, danh tính và nhật ký (`identity-and-audit.md`), kết quả thử khái niệm D1. |
+| `poc/` | Thử khái niệm bước 1 trên hệ sinh thái InterUSS. |
 | `twin/` | Bản sao số tối thiểu: phương tiện bay mô phỏng (I-07) và 5 trạm RIS ảo (I-06), có tiêm lỗi. |
 | `tests/` | Kiểm thử lược đồ và bản sao số. |
 
+## Chạy dịch vụ B1 cục bộ
+
+```bash
+python tools/dev_token.py --sub it-admin --mfa > /dev/null   # sinh khoá phát triển vào .dev/
+docker compose up -d --build                                  # PostGIS + dịch vụ tại http://localhost:8000/docs
+docker compose exec api python -m b1.admin bootstrap --issuer https://idp.b1.local/realms/b1 --subject it-admin --name "Quản trị"
+curl -H "Authorization: Bearer $(python tools/dev_token.py --sub it-admin --mfa)" localhost:8000/v1/me
+```
+
 ## Chạy kiểm tra
+
+Các bài của dịch vụ cần PostgreSQL ở localhost:5432 (tài khoản b1/b1), ví dụ `docker compose up -d db`.
 
 ```bash
 pip install -r requirements-dev.txt

@@ -6,6 +6,16 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: b1
+          POSTGRES_PASSWORD: b1
+          POSTGRES_DB: b1
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U b1" --health-interval 2s --health-retries 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,7 +28,12 @@ jobs:
         run: git diff --exit-code config/corridor
       - name: Kiểm tra hợp đồng OpenAPI
         run: |
-          for f in api/*.openapi.yaml; do
+          for f in api/*.openapi.yaml api/*.openapi.json; do
             python -c "import sys; from openapi_spec_validator import validate; from openapi_spec_validator.readers import read_from_filename; validate(read_from_filename(sys.argv[1])[0]); print('OK', sys.argv[1])" "$f"
           done
-      - run: pytest -q tests
+      - name: Hợp đồng OpenAPI của dịch vụ B1 khớp với mã
+        run: python tools/export_openapi.py && git diff --exit-code api/l6-core.openapi.json
+      - name: Kiểm thử (các bài cần CSDL chạy trên PostgreSQL của CI, không được bỏ qua)
+        env:
+          B1_TEST_REQUIRE_DB: '1'
+        run: pytest -q tests
