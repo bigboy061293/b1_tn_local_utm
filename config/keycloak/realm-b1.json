@@ -21,14 +21,15 @@
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
       "redirectUris": [
-        "http://localhost:8000/portal/*"
+        "http://localhost:8000/portal/*",
+        "http://localhost:8000/ops/*"
       ],
       "webOrigins": [
         "http://localhost:8000"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost:8000/portal/*"
+        "post.logout.redirect.uris": "http://localhost:8000/portal/*##http://localhost:8000/ops/*"
       },
       "protocolMappers": [
         {

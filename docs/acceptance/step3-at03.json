@@ -1,0 +1,309 @@
+{
+ "run_at": "2026-11-27T19:53:59+00:00",
+ "base": "http://localhost:8011",
+ "run_tag": "f50ce3",
+ "at03": {
+  "package": {
+   "activation_id": "edda25c4-574c-4245-928c-3afc3826d5ad",
+   "flights": 1,
+   "sha256": "06c99121b439b97928b1c3265c7b1e160414c3aca6923e7c9a0bed589e7a5f36",
+   "checks": [
+    {
+     "check": "ba dạng cùng mã băm",
+     "ok": true,
+     "detail": "06c99121b439b97928b1c3265c7b1e160414c3aca6923e7c9a0bed589e7a5f36"
+    },
+    {
+     "check": "văn bản có chuyến HL-20261128-0001",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "văn bản có mã khối, tầng, khung giờ, mã băm",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "văn bản có đủ toạ độ đỉnh WGS84",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "GeoJSON: vòng đóng",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "GeoJSON: vòng ngoài ngược chiều kim đồng hồ (RFC 7946)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "GeoJSON: khớp hình học khối",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "GeoJSON: có tầng, khung giờ, chuyến",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "ED-269: qua lược đồ kiểm tra",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "check": "ED-269: cùng đa giác và tầng",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "pass": true,
+   "geojson_bytes": 1253,
+   "ed269_bytes": 1834,
+   "ed269_identifier": "B1106C9",
+   "coordinated": true,
+   "activate_before_window": {
+    "http": 409,
+    "detail": "chưa đến giờ: kích hoạt sớm nhất 60 phút trước giờ bắt đầu"
+   }
+  },
+  "latency": {
+   "samples": 39,
+   "missing": 0,
+   "p50_ms": 115.8,
+   "p95_ms": 207.6,
+   "max_ms": 210.2,
+   "limit_ms": 5000.0,
+   "pass": true
+  },
+  "cycles": [
+   {
+    "cycle": 1,
+    "activation_id": "af2ae130-0329-40a2-a388-b9616054539a",
+    "activate_api_ms": 46.0,
+    "activate_to_map_ms": 115.4,
+    "state_after_activate": "active",
+    "close_to_map_ms": 203.5
+   },
+   {
+    "cycle": 2,
+    "activation_id": "347717f7-00f6-4bee-96b0-e28d30426008",
+    "activate_api_ms": 46.6,
+    "activate_to_map_ms": 102.8,
+    "state_after_activate": "active",
+    "close_to_map_ms": 205.1
+   },
+   {
+    "cycle": 3,
+    "activation_id": "bc25df02-bfbd-4dd9-9132-b5aabc5c5dbf",
+    "activate_api_ms": 43.7,
+    "activate_to_map_ms": 110.6,
+    "state_after_activate": "active",
+    "close_to_map_ms": 208.4
+   },
+   {
+    "cycle": 4,
+    "activation_id": "b11d3851-2ec1-4d56-81ed-f8001a38a625",
+    "activate_api_ms": 46.9,
+    "activate_to_map_ms": 88.6,
+    "state_after_activate": "active",
+    "close_to_map_ms": 191.5
+   },
+   {
+    "cycle": 5,
+    "activation_id": "7fd4385a-fe3a-43de-b96a-9fae615880b7",
+    "activate_api_ms": 54.5,
+    "activate_to_map_ms": 90.0,
+    "state_after_activate": "active",
+    "close_to_map_ms": 201.5
+   },
+   {
+    "cycle": 6,
+    "activation_id": "9fb27c0b-89c2-4f07-a170-155c9687e865",
+    "activate_api_ms": 44.9,
+    "activate_to_map_ms": 105.8,
+    "state_after_activate": "active",
+    "close_to_map_ms": 197.6
+   },
+   {
+    "cycle": 7,
+    "activation_id": "0cc3efe8-74e3-455c-a367-58dbdda16b7a",
+    "activate_api_ms": 47.7,
+    "activate_to_map_ms": 108.0,
+    "state_after_activate": "active",
+    "close_to_map_ms": 210.2
+   },
+   {
+    "cycle": 8,
+    "activation_id": "aff3a8d4-c417-462c-a4f3-dd4658ee2607",
+    "activate_api_ms": 43.5,
+    "activate_to_map_ms": 115.8,
+    "state_after_activate": "active",
+    "close_to_map_ms": 201.3
+   },
+   {
+    "cycle": 9,
+    "activation_id": "613d473b-ca20-4dab-b967-51c42507daf8",
+    "activate_api_ms": 43.6,
+    "activate_to_map_ms": 106.4,
+    "state_after_activate": "active",
+    "close_to_map_ms": 200.2
+   },
+   {
+    "cycle": 10,
+    "activation_id": "a39abbf3-6f0f-4ee7-acc2-1f07813eb0cc",
+    "activate_api_ms": 47.8,
+    "activate_to_map_ms": 100.2,
+    "state_after_activate": "active",
+    "close_to_map_ms": 185.7
+   },
+   {
+    "cycle": 11,
+    "activation_id": "9be620a0-3ea2-4764-b353-6adbd09b9846",
+    "activate_api_ms": 49.8,
+    "activate_to_map_ms": 92.5,
+    "state_after_activate": "active",
+    "close_to_map_ms": 196.8
+   },
+   {
+    "cycle": 12,
+    "activation_id": "b59f2f4b-897d-4e0b-ab10-86fa026a784e",
+    "activate_api_ms": 47.4,
+    "activate_to_map_ms": 95.2,
+    "state_after_activate": "active",
+    "close_to_map_ms": 198.1
+   },
+   {
+    "cycle": 13,
+    "activation_id": "34e404d8-1ad4-4bf3-b20d-b4ecb0fd55ed",
+    "activate_api_ms": 44.1,
+    "activate_to_map_ms": 87.2,
+    "state_after_activate": "active",
+    "close_to_map_ms": 204.2
+   },
+   {
+    "cycle": 14,
+    "activation_id": "06ff5370-b7a9-4dcb-ace8-c84d195bff90",
+    "activate_api_ms": 64.2,
+    "activate_to_map_ms": 92.0,
+    "state_after_activate": "active",
+    "close_to_map_ms": 188.4
+   },
+   {
+    "cycle": 15,
+    "activation_id": "0aa88d40-23e2-4957-af6f-4326d139024a",
+    "activate_api_ms": 46.9,
+    "activate_to_map_ms": 111.6,
+    "state_after_activate": "active",
+    "close_to_map_ms": 203.7
+   },
+   {
+    "cycle": 16,
+    "activation_id": "a3410a50-f5a8-4cf6-9e16-b0a6247f56d5",
+    "activate_api_ms": 56.7,
+    "activate_to_map_ms": 98.3,
+    "state_after_activate": "active",
+    "close_to_map_ms": 198.9
+   },
+   {
+    "cycle": 17,
+    "activation_id": "1c67578b-0545-4aa0-a851-6d6e91ec0595",
+    "activate_api_ms": 42.3,
+    "activate_to_map_ms": 108.3,
+    "state_after_activate": "active",
+    "close_to_map_ms": 203.9
+   },
+   {
+    "cycle": 18,
+    "activation_id": "e6cf8dec-ee11-4f5b-b87c-f46d01d90af9",
+    "activate_api_ms": 52.6,
+    "activate_to_map_ms": 101.2,
+    "state_after_activate": "active",
+    "close_to_map_ms": 203.7
+   },
+   {
+    "cycle": 19,
+    "activation_id": "7c8bfddd-d841-40ed-8bbb-fef8e8135966",
+    "activate_api_ms": 44.6,
+    "activate_to_map_ms": 112.2,
+    "state_after_activate": "active",
+    "close_to_map_ms": 207.6
+   },
+   {
+    "cycle": 20,
+    "activation_id": "b82434ff-c644-4356-91bc-ed5da0c5b870",
+    "activate_api_ms": 49.2,
+    "activate_to_map_ms": 80.1,
+    "state_after_activate": "active"
+   }
+  ],
+  "pass": true
+ },
+ "f04": {
+  "attempts": [
+   {
+    "case": "Cán bộ trực ban, thời tiết chưa đạt",
+    "http": 409,
+    "failed": [
+     "CHECKLIST"
+    ],
+    "state": null
+   },
+   {
+    "case": "Trưởng bộ phận chưa vào ca",
+    "http": 409,
+    "failed": [
+     "ON_DUTY"
+    ],
+    "state": null
+   },
+   {
+    "case": "Cán bộ trực ban, đủ danh mục",
+    "http": 200,
+    "failed": [],
+    "state": "cleared"
+   },
+   {
+    "case": "Trưởng bộ phận đã vào ca",
+    "http": 200,
+    "failed": [],
+    "state": "cleared"
+   }
+  ],
+  "expected_http": [
+   409,
+   409,
+   200,
+   200
+  ],
+  "signature_valid_server": true,
+  "signature_valid_external": true,
+  "signer_roles": [
+   "duty_safety_officer"
+  ],
+  "close_with_cleared_flight": {
+   "http": 409,
+   "detail": "còn chuyến đã cho phép cất cánh hoặc đang bay trong khối: ffe7b1e8-c03e-4e15-9d63-385146f3c466, 757c04f5-a435-4254-a972-bcd7657f6d24"
+  },
+  "pass": true
+ },
+ "twin_flight": {
+  "uas_id": "SIM0001B1TNF50CE3",
+  "samples_i07": 4891,
+  "outside_keep_in": 0,
+  "outside_altitude": 0,
+  "min_distance_to_edge_m": 47,
+  "hard_fences": [
+   "geofence-north-block-4"
+  ],
+  "can_disable": false,
+  "pass": true
+ },
+ "audit_chain": {
+  "ok": true,
+  "records": 146,
+  "head": "f103aea3b7bd80056ffdd19645728308b5aa78d9320c4fd60cfae956f6cc9ed2"
+ }
+}

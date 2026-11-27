@@ -106,6 +106,43 @@
      ]
     ]
    }
+  },
+  {
+   "type": "Feature",
+   "id": "geofence-north-block-4",
+   "properties": {
+    "kind": "hard_geofence",
+    "name": "Ranh Bắc khối 4",
+    "restriction": "PROHIBITED_BEYOND",
+    "note": "Rào địa lý cứng, không vô hiệu hoá được; mép hành lang cách biên giới khoảng 15,1 km",
+    "source": "ĐA §6.2; KML v2.6; Đặc tả B1 v0.1 Mục 2.2"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      106.2227573,
+      11.5666046
+     ],
+     [
+      106.1720888,
+      11.5454652
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "border-strip-10km",
+   "properties": {
+    "kind": "airspace_constraint",
+    "name": "Dải hạn chế bay 10 km tính từ biên giới",
+    "restriction": "PROHIBITED",
+    "status": "awaiting_data",
+    "note": "Chưa có dữ liệu đường biên giới chính thức; nằm ngoài hành lang hiện tại",
+    "source": "ĐA §6.2; Đặc tả B1 v0.1 Mục 2.2"
+   },
+   "geometry": null
   }
  ]
 }

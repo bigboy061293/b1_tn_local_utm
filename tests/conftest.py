@@ -9,6 +9,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import pathlib
 import time
 import uuid
 
@@ -53,7 +54,9 @@ def app(pg_url, signing_key):
     from b1.app import create_app
     from b1.config import Settings
 
-    return create_app(Settings(database_url=pg_url, oidc_issuer=ISSUER, oidc_audience=AUDIENCE, jwks_file=signing_key[1]))
+    key_file = str(pathlib.Path(signing_key[1]).parent / "b1_signing_key.pem")
+    return create_app(Settings(database_url=pg_url, oidc_issuer=ISSUER, oidc_audience=AUDIENCE, jwks_file=signing_key[1],
+                               signing_key_file=key_file))
 
 
 @pytest.fixture(scope="session")
@@ -68,7 +71,7 @@ def make_token(signing_key):
     def _make(sub: str, mfa: bool = True, issuer: str = ISSUER, ttl: int = 600, **extra) -> str:
         now = int(time.time())
         claims = {"iss": issuer, "aud": AUDIENCE, "sub": sub, "iat": now, "exp": now + ttl,
-                  "amr": ["pwd", "otp"] if mfa else ["pwd"], **extra}
+                  "amr": ["pwd", "otp"] if mfa else ["pwd"], "auth_time": now - 30, **extra}
         return jwt.encode(claims, signing_key[0], algorithm="RS256", headers={"kid": KID})
     return _make
 
@@ -153,3 +156,45 @@ def onboard(app, client, make_user):
         return {"customer": cust, "staff": staff, "tech": tech, "customer_id": cid, "aircraft_id": aid, "pilot_id": pid,
                 "docs": docs, "org_id": org_id}
     return _onboard
+
+
+CHECKLIST_OK = {k: {"ok": True} for k in ("weather", "ris_stations", "network", "conformance_monitoring", "emergency_plan")}
+CLEARANCE_BODY = {**CHECKLIST_OK, "confirm": True}
+
+
+@pytest.fixture(scope="session")
+def live_block(app):
+    """Khối 1 đã hiệp đồng và kích hoạt từ 1 giờ trước đến 8 giờ sau (dùng chung cho các bài cho phép cất cánh)."""
+    from b1.airspace import package as pkg
+    from b1.audit.service import SYSTEM
+
+    sp = app.state.airspace
+    now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+    a = sp.create_activation(SYSTEM, "block-1", now - dt.timedelta(hours=1), now + dt.timedelta(hours=8), [])
+    sp.coordinate(SYSTEM, a.id, result="approved", package_sha256=pkg.sha256(sp.package(a.id)), reference="CV-TEST/1",
+                  counterpart="Kiểm thử")
+    return sp.activate(SYSTEM, a.id)
+
+
+@pytest.fixture(scope="session")
+def ready_flight(app, live_block):
+    """Tạo chuyến đã xếp lịch trong khối 1 đang kích hoạt, bắt đầu sau `start_in_min` phút."""
+    def _make(start_in_min: int = 10, minutes: int = 30, block_ids=("block-1",)) -> str:
+        now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+        st = now + dt.timedelta(minutes=start_in_min)
+        return str(app.state.operations.create_flight(
+            request_ref=f"HL-{now:%Y%m%d}-{uuid.uuid4().int % 10_000:04d}", uas_id="SIM0001B1TN", customer_id=None,
+            starts_at=st, ends_at=st + dt.timedelta(minutes=minutes), block_ids=list(block_ids), bvlos=True))
+    return _make
+
+
+@pytest.fixture(scope="session")
+def put_on_duty(app):
+    from b1.operations.models import DutyShift
+
+    def _put(user_id, role: str = "corridor_head", hours: float = 4):
+        now = dt.datetime.now(dt.timezone.utc)
+        with app.state.sessionmaker() as s:
+            s.add(DutyShift(user_id=user_id, role=role, starts_at=now - dt.timedelta(minutes=5), ends_at=now + dt.timedelta(hours=hours)))
+            s.commit()
+    return _put

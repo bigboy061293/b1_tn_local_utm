@@ -1,0 +1,18 @@
+GÓI DỮ LIỆU KÍCH HOẠT KHỐI VÙNG TRỜI – KHỐI 1 (block-1)
+Mã gói: edda25c4-574c-4245-928c-3afc3826d5ad
+Mã băm SHA-256: 06c99121b439b97928b1c3265c7b1e160414c3aca6923e7c9a0bed589e7a5f36
+
+1. Khối: Khối 1, từ Km 0,00 đến Km 14,77 trên tim tuyến hành lang.
+2. Tầng độ cao khai thác: từ 20 m đến 150 m so với mặt đất.
+   Trần bao của hành lang trong khối: Trần trong vùng tiếp cận Tân Sơn Nhất: dưới 600 m so với mực nước biển.
+3. Khung giờ: từ 08:30 ngày 29/11/2026 đến 10:30 ngày 29/11/2026 (giờ Việt Nam, UTC+7); UTC: 2026-11-29T01:30:00Z – 2026-11-29T03:30:00Z.
+4. Toạ độ đỉnh (WGS84):
+   Đỉnh 1: 11°14'30.1"N 106°22'01.7"E (11.2417048, 106.3671479)
+   Đỉnh 2: 11°12'32.9"N 106°19'18.8"E (11.2091376, 106.3218934)
+   Đỉnh 3: 11°06'53.3"N 106°25'30.3"E (11.1148058, 106.4250793)
+   Đỉnh 4: 11°09'16.6"N 106°27'44.7"E (11.1546039, 106.4624067)
+5. Chuyến bay (1):
+   1. Số HL-20261128-0001; nhà khai thác: Nhà khai thác AT-03 f50ce3; phương tiện: phương tiện mô phỏng của bản sao số, số đăng ký VN-AT3-f50ce3, mã nhận dạng SIM0001B1TNF50CE3, khối lượng cất cánh tối đa 25,0 kg; ngoài tầm nhìn; 08:30–10:30.
+
+Đơn vị lập: Bộ phận quản lý hành lang bay B1 Tây Ninh.
+Ghi chú: "Phê duyệt" trên B1 là phê duyệt lịch bay nội bộ, không phải phép bay. Hình học khối là dự thảo theo KML hành lang, chưa phải vùng trời đã phê duyệt.

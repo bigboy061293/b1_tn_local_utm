@@ -1,0 +1,21 @@
+main.ops { max-width: 1400px; }
+.opsgrid { display: grid; grid-template-columns: minmax(320px, 440px) 1fr; gap: 18px; align-items: start; }
+.mapcard { position: sticky; top: 10px; }
+#map { width: 100%; height: auto; display: block; background: #eef3f7; border-radius: 6px; }
+#map .blk { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; transition: fill .15s; }
+#map .blk[data-status="inactive"] { fill: #c9d1da; }
+#map .blk[data-status="active"] { fill: #2e9d5b; }
+#map .blk.upcoming[data-status="inactive"] { fill: #e9c46a; }
+#map .fence { stroke: #c0392b; stroke-width: 4; vector-effect: non-scaling-stroke; fill: none; }
+#map text { font-size: 11px; fill: #1c2430; paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; margin-top: 8px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.live { font-size: 13px; margin-top: 8px; }
+.live .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; }
+.live.on .dot { background: var(--ok); }
+.acts td .row { display: flex; gap: 6px; flex-wrap: wrap; }
+.acts button { padding: 4px 10px; font-size: 13px; }
+pre.pkg { white-space: pre-wrap; background: #fbfcfd; border: 1px solid var(--line); border-radius: 6px; padding: 12px; max-height: 420px; overflow: auto; font-size: 13px; }
+dialog { border: 1px solid var(--line); border-radius: var(--radius); max-width: 760px; width: calc(100% - 32px); padding: 18px; }
+dialog::backdrop { background: rgba(20, 30, 40, .35); }
+@media (max-width: 900px) { .opsgrid { grid-template-columns: 1fr; } .mapcard { position: static; } }

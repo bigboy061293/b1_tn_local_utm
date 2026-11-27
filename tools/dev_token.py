@@ -37,7 +37,7 @@ def main() -> None:
     ap.add_argument("--ttl", type=int, default=3600, help="giây, tối đa 1 giờ (Đặc tả Mục 6)")
     a = ap.parse_args()
     now = int(time.time())
-    print(jwt.encode({"iss": ISSUER, "aud": AUDIENCE, "sub": a.sub, "iat": now, "exp": now + min(a.ttl, 3600),
+    print(jwt.encode({"iss": ISSUER, "aud": AUDIENCE, "sub": a.sub, "iat": now, "exp": now + min(a.ttl, 3600), "auth_time": now,
                       "amr": ["pwd", "otp"] if a.mfa else ["pwd"]}, key(), algorithm="RS256", headers={"kid": KID}))
 
 

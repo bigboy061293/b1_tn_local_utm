@@ -128,6 +128,23 @@ def main():
          "geometry": r7(seg_b.buffer(HALF_WIDTH_M, cap_style="flat", join_style="mitre", mitre_limit=5.0).intersection(corridor))},
     ]
 
+    # Ranh Bắc khối 4: rào địa lý cứng [ĐA §6.2; KML v2.6] = đầu bằng phía bắc của hành lang, rộng 6 km.
+    ux, uy = unit(P["RIS-5"].x - P["RIS-3"].x, P["RIS-5"].y - P["RIS-3"].y)
+    end = P["RIS-5"]
+    north_edge = LineString([(end.x + uy * HALF_WIDTH_M, end.y - ux * HALF_WIDTH_M), (end.x - uy * HALF_WIDTH_M, end.y + ux * HALF_WIDTH_M)])
+    hard = [
+        {"type": "Feature", "id": "geofence-north-block-4", "properties": {
+            "kind": "hard_geofence", "name": "Ranh Bắc khối 4", "restriction": "PROHIBITED_BEYOND",
+            "note": "Rào địa lý cứng, không vô hiệu hoá được; mép hành lang cách biên giới khoảng 15,1 km",
+            "source": "ĐA §6.2; KML v2.6; Đặc tả B1 v0.1 Mục 2.2"},
+         "geometry": r7(north_edge)},
+        {"type": "Feature", "id": "border-strip-10km", "properties": {
+            "kind": "airspace_constraint", "name": "Dải hạn chế bay 10 km tính từ biên giới", "restriction": "PROHIBITED",
+            "status": "awaiting_data", "note": "Chưa có dữ liệu đường biên giới chính thức; nằm ngoài hành lang hiện tại",
+            "source": "ĐA §6.2; Đặc tả B1 v0.1 Mục 2.2"},
+         "geometry": None},
+    ]
+
     lake_km = [(31.17, 40.48), (41.78, 45.11), (48.95, 48.98), (49.64, 49.78)]
     lake = [{"type": "Feature", "id": f"lake-dau-tieng-{j}", "properties": {
         "kind": "reference_layer", "name": "Mặt nước hồ Dầu Tiếng trên tim tuyến",
@@ -153,7 +170,7 @@ def main():
             "kind": "centerline", "length_km": round(km(center.length), 2), "vertices": ["RIS-1", "RIS-2", "RIS-3", "RIS-5"]},
             "geometry": r7(center)}]),
         "blocks.geojson": fc("blocks", blocks),
-        "constraints.geojson": fc("constraints", ceilings),
+        "constraints.geojson": fc("constraints", ceilings + hard),
         "reference.geojson": fc("reference", lake),
         "ris_stations.geojson": fc("ris_stations", stations),
     }

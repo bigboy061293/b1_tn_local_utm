@@ -31,4 +31,5 @@ với hồ sơ khách hàng thì mới vào được.
    cán bộ (xác nhận giấy tờ, chạy xếp lịch, cho phép cất cánh) vì vậy bị từ chối khi đăng nhập qua Keycloak phát triển.
    Cần cấu hình luồng đăng nhập có OTP và giá trị `amr` trước khi làm giao diện điều hành ở bước 3.
 2. **Tải tệp giấy tờ:** chờ kho tệp có mã hoá (bước 6).
-3. **Giao diện cho cán bộ** (xác nhận giấy tờ, chạy xếp lịch, cho phép cất cánh) làm ở bước 3 cùng giao diện điều hành.
+3. **Giao diện cho cán bộ:** bước 3 có trang vận hành `/ops/` cho vùng trời (`docs/airspace-and-clearance.md`). Xác nhận giấy tờ,
+   chạy xếp lịch, cho phép cất cánh trên giao diện làm cùng giao diện điều hành ở bước 4; hiện qua API.

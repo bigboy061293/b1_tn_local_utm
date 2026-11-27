@@ -63,6 +63,14 @@ class RegistryService:
         with self.sm() as s:
             return s.scalar(select(Customer).where(Customer.org_id == org_id))
 
+    def flight_card(self, customer_id: uuid.UUID | None, uas_id: str | None) -> dict:
+        """Thông tin nhà khai thác và phương tiện đưa vào gói kích hoạt khối."""
+        with self.sm() as s:
+            c = s.get(Customer, customer_id) if customer_id else None
+            a = s.scalars(select(Aircraft).where(Aircraft.uas_id == uas_id)).first() if uas_id else None
+            return {"operator": c.name if c else None, "vn_registration_no": a.vn_registration_no if a else None,
+                    "model": a.model if a else None, "mtow_kg": a.mtow_kg if a else None}
+
     def eligibility(self, aircraft_id: uuid.UUID, pilot_id: uuid.UUID, start: dt.datetime, end: dt.datetime,
                     bvlos: bool, stage: str = "request") -> Eligibility:
         """stage = request (khi nhận yêu cầu, khi xếp lịch) | final (xác nhận lần cuối T − 3: thêm bảo hiểm)."""

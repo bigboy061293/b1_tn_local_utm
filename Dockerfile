@@ -3,6 +3,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY b1 ./b1
+COPY config ./config
 RUN useradd -r b1 && chown -R b1 /app
 USER b1
 EXPOSE 8000
