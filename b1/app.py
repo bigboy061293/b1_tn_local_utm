@@ -13,6 +13,9 @@ from b1.operations.api import router as operations_router
 from b1.connectors import i02
 from b1.registry.api import router as registry_router
 from b1.registry.service import RegistryService
+from b1.operations.service import OperationsService
+from b1.scheduling.api import router as scheduling_router
+from b1.scheduling.service import SchedulingService
 
 DISCLAIMERS = [
     "B1 không thay thế hệ thống quản lý bay quốc gia.",
@@ -35,9 +38,12 @@ def create_app(settings: Settings | None = None, *, create_schema: bool = True) 
     app.state.verifier = TokenVerifier(settings)
     app.state.registry = RegistryService(app.state.sessionmaker)
     app.state.i02 = i02.make(settings.i02_connector, settings.i02_mock_file)
+    app.state.operations = OperationsService(app.state.sessionmaker)
+    app.state.scheduling = SchedulingService(app.state.sessionmaker, app.state.registry, app.state.operations, app.state.audit)
     app.include_router(identity_router)
     app.include_router(audit_router)
     app.include_router(registry_router)
+    app.include_router(scheduling_router)
     app.include_router(operations_router)
 
     @app.get("/v1/disclaimers", tags=["Chung"])

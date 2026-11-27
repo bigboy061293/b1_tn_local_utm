@@ -7,7 +7,7 @@ from fastapi import Request
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-SCHEMAS = ("identity", "audit", "registry", "operations")
+SCHEMAS = ("identity", "audit", "registry", "scheduling", "operations")
 
 
 class Base(DeclarativeBase):
@@ -42,6 +42,7 @@ def init_db(engine: Engine) -> None:
     from b1.identity import models as _i  # noqa: F401
     from b1.operations import models as _o  # noqa: F401
     from b1.registry import models as _r  # noqa: F401
+    from b1.scheduling import models as _s  # noqa: F401
 
     with engine.begin() as c:
         for s in SCHEMAS:

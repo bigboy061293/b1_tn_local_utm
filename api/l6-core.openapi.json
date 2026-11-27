@@ -1240,6 +1240,488 @@
     }
    }
   },
+  "/v1/scheduling/requests": {
+   "post": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Submit",
+    "operationId": "submit_v1_scheduling_requests_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RequestBody"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Submit V1 Scheduling Requests Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "List Requests",
+    "operationId": "list_requests_v1_scheduling_requests_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Requests V1 Scheduling Requests Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/requests/{request_id}": {
+   "get": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Get Request",
+    "operationId": "get_request_v1_scheduling_requests__request_id__get",
+    "parameters": [
+     {
+      "name": "request_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Request Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Request V1 Scheduling Requests  Request Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/requests/{request_id}/recheck": {
+   "post": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Recheck",
+    "operationId": "recheck_v1_scheduling_requests__request_id__recheck_post",
+    "parameters": [
+     {
+      "name": "request_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Request Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Recheck V1 Scheduling Requests  Request Id  Recheck Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/requests/{request_id}/cancel": {
+   "post": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Cancel",
+    "operationId": "cancel_v1_scheduling_requests__request_id__cancel_post",
+    "parameters": [
+     {
+      "name": "request_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Request Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Cancel V1 Scheduling Requests  Request Id  Cancel Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/availability": {
+   "get": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Availability",
+    "description": "Công khai cho mọi tài khoản: khung còn trống, số khung đang chờ (Mục 4.3).",
+    "operationId": "availability_v1_scheduling_availability_get",
+    "parameters": [
+     {
+      "name": "start",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date",
+       "title": "Start"
+      }
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date",
+       "title": "End"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Availability V1 Scheduling Availability Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/queue": {
+   "get": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Public Queue",
+    "description": "Công khai số thứ tự và vị trí trong hàng chờ, không lộ tên khách hàng.",
+    "operationId": "public_queue_v1_scheduling_queue_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Public Queue V1 Scheduling Queue Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/runs": {
+   "post": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Run",
+    "description": "Chạy kỳ xếp lịch ngay (thường chạy tự động 16:00 bằng `python -m b1.scheduling.cron`).",
+    "operationId": "run_v1_scheduling_runs_post",
+    "parameters": [
+     {
+      "name": "as_of",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "As Of"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Run V1 Scheduling Runs Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/runs/{run_id}": {
+   "get": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Get Run",
+    "operationId": "get_run_v1_scheduling_runs__run_id__get",
+    "parameters": [
+     {
+      "name": "run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Run V1 Scheduling Runs  Run Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/params": {
+   "get": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Get Params",
+    "operationId": "get_params_v1_scheduling_params_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Get Params V1 Scheduling Params Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/scheduling/params/{key}": {
+   "put": {
+    "tags": [
+     "Xếp lịch"
+    ],
+    "summary": "Set Param",
+    "operationId": "set_param_v1_scheduling_params__key__put",
+    "parameters": [
+     {
+      "name": "key",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Key"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ParamBody"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Set Param V1 Scheduling Params  Key  Put"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/flights": {
    "post": {
     "tags": [
@@ -1804,6 +2286,26 @@
     "type": "object",
     "title": "HTTPValidationError"
    },
+   "ItemBody": {
+    "properties": {
+     "day": {
+      "type": "string",
+      "format": "date",
+      "title": "Day"
+     },
+     "slot": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Slot"
+     }
+    },
+    "type": "object",
+    "required": [
+     "day",
+     "slot"
+    ],
+    "title": "ItemBody"
+   },
    "OrgIn": {
     "properties": {
      "name": {
@@ -1824,6 +2326,18 @@
      "kind"
     ],
     "title": "OrgIn"
+   },
+   "ParamBody": {
+    "properties": {
+     "value": {
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value"
+    ],
+    "title": "ParamBody"
    },
    "PilotIn": {
     "properties": {
@@ -1851,6 +2365,57 @@
      "full_name"
     ],
     "title": "PilotIn"
+   },
+   "RequestBody": {
+    "properties": {
+     "aircraft_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Aircraft Id"
+     },
+     "pilot_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Pilot Id"
+     },
+     "priority_group": {
+      "type": "integer",
+      "maximum": 4.0,
+      "minimum": 1.0,
+      "title": "Priority Group",
+      "description": "Nhóm ưu tiên theo Phụ lục 05 của Đề án Hành lang",
+      "default": 3
+     },
+     "bvlos": {
+      "type": "boolean",
+      "title": "Bvlos",
+      "default": true
+     },
+     "block_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Block Ids"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ItemBody"
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "aircraft_id",
+     "pilot_id",
+     "block_ids",
+     "items"
+    ],
+    "title": "RequestBody"
    },
    "Role": {
     "type": "string",
