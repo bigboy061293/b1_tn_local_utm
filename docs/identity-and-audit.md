@@ -18,18 +18,22 @@ AT-04. Mã: `b1/identity`, `b1/audit`, `b1/auth.py`.
 
 ## Ma trận quyền
 
-| Quyền | Trưởng bộ phận | Cán bộ ATB trực ban | KS vô tuyến, mạng | KS CNTT | KTV bay thử | KH khai thác | KH đào tạo | Cơ quan QL | BP điều phối | Kiểm toán |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `flight.clear_takeoff` (MFA) | ✓ | ✓ |  |  |  |  |  |  |  |  |
-| `stop.issue` (MFA) | ✓ | ✓ |  |  |  |  |  |  |  |  |
-| `schedule.manage` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |
-| `request.own` |  |  |  |  |  | ✓ | ✓ |  |  |  |
-| `flight.read_all` | ✓ | ✓ | ✓ | ✓ | ✓ |  |  | ✓ | ✓ | ✓ |
-| `portal.admin` (MFA) |  |  |  |  |  |  |  |  | ✓ |  |
-| `user.manage` (MFA) |  |  |  | ✓ |  |  |  |  |  |  |
-| `audit.read` |  |  |  | ✓ |  |  |  |  |  | ✓ |
+| Quyền | Trưởng bộ phận | Cán bộ ATB trực ban | KS vô tuyến, mạng | KS CNTT | KTV bay thử | KH khai thác | KH đào tạo | Cơ quan QL | BP điều phối | Kiểm toán | Cổng tỉnh (máy) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `flight.clear_takeoff` (MFA) | ✓ | ✓ |  |  |  |  |  |  |  |  |  |
+| `stop.issue` (MFA) | ✓ | ✓ |  |  |  |  |  |  |  |  |  |
+| `schedule.manage` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |  |
+| `request.own` |  |  |  |  |  | ✓ | ✓ |  |  |  |  |
+| `flight.read_all` | ✓ | ✓ | ✓ | ✓ | ✓ |  |  | ✓ | ✓ | ✓ |  |
+| `portal.admin` (MFA) |  |  |  |  |  |  |  |  | ✓ |  |  |
+| `user.manage` (MFA) |  |  |  | ✓ |  |  |  |  |  |  |  |
+| `audit.read` |  |  |  | ✓ |  |  |  |  |  | ✓ |  |
+| `customer.manage` (MFA) | ✓ |  |  |  |  |  |  |  | ✓ |  |  |
+| `registry.verify` (MFA) | ✓ |  |  |  |  |  |  |  | ✓ |  |  |
+| `conformance.record` (MFA) | ✓ |  |  |  | ✓ |  |  |  |  |  |  |
+| `province.submit` |  |  |  |  |  |  |  |  |  |  | ✓ |
 
-Nguồn: `b1/identity/roles.py`. AT-04 kiểm dòng `flight.clear_takeoff` với cả 10 vai trò
+Nguồn: `b1/identity/roles.py`. AT-04 kiểm dòng `flight.clear_takeoff` với mọi vai trò
 (`tests/test_at04_takeoff_clearance.py`).
 
 ## Nhật ký truy vết

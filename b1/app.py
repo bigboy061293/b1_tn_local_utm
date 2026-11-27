@@ -21,6 +21,7 @@ from b1.notify.api import router as notify_router
 from b1.notify.service import NotifyService
 from b1.portal.routes import STATIC as PORTAL_STATIC
 from b1.portal.routes import router as portal_router
+from b1.gateway.api import router as gateway_router
 
 DISCLAIMERS = [
     "B1 không thay thế hệ thống quản lý bay quốc gia.",
@@ -52,6 +53,7 @@ def create_app(settings: Settings | None = None, *, create_schema: bool = True) 
     app.include_router(registry_router)
     app.include_router(scheduling_router)
     app.include_router(notify_router)
+    app.include_router(gateway_router)
     app.include_router(portal_router)
     app.mount("/portal/static", StaticFiles(directory=PORTAL_STATIC), name="portal-static")
     app.include_router(operations_router)
