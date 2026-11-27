@@ -424,6 +424,822 @@
     }
    }
   },
+  "/v1/registry/customers": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Create Customer",
+    "operationId": "create_customer_v1_registry_customers_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CustomerIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Create Customer V1 Registry Customers Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/customers/{customer_id}": {
+   "patch": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Patch Customer",
+    "operationId": "patch_customer_v1_registry_customers__customer_id__patch",
+    "parameters": [
+     {
+      "name": "customer_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Customer Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CustomerPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Patch Customer V1 Registry Customers  Customer Id  Patch"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/customers/me": {
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Get My Customer",
+    "operationId": "get_my_customer_v1_registry_customers_me_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Get My Customer V1 Registry Customers Me Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/pilots": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Create Pilot",
+    "operationId": "create_pilot_v1_registry_pilots_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PilotIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Create Pilot V1 Registry Pilots Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "List Pilots",
+    "operationId": "list_pilots_v1_registry_pilots_get",
+    "parameters": [
+     {
+      "name": "customer_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Customer Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Pilots V1 Registry Pilots Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/aircraft": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Create Aircraft",
+    "operationId": "create_aircraft_v1_registry_aircraft_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AircraftIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Create Aircraft V1 Registry Aircraft Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "List Aircraft",
+    "operationId": "list_aircraft_v1_registry_aircraft_get",
+    "parameters": [
+     {
+      "name": "customer_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Customer Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Aircraft V1 Registry Aircraft Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/aircraft/{aircraft_id}": {
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Get Aircraft",
+    "operationId": "get_aircraft_v1_registry_aircraft__aircraft_id__get",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Aircraft V1 Registry Aircraft  Aircraft Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Patch Aircraft",
+    "operationId": "patch_aircraft_v1_registry_aircraft__aircraft_id__patch",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AircraftPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Patch Aircraft V1 Registry Aircraft  Aircraft Id  Patch"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/documents": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Submit Document",
+    "operationId": "submit_document_v1_registry_documents_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DocumentIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Submit Document V1 Registry Documents Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "List Documents",
+    "operationId": "list_documents_v1_registry_documents_get",
+    "parameters": [
+     {
+      "name": "customer_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Customer Id"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Documents V1 Registry Documents Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/documents/{document_id}/verify": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Verify Document",
+    "operationId": "verify_document_v1_registry_documents__document_id__verify_post",
+    "parameters": [
+     {
+      "name": "document_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Document Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VerifyIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Verify Document V1 Registry Documents  Document Id  Verify Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/aircraft/{aircraft_id}/verify-device": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Verify Device",
+    "operationId": "verify_device_v1_registry_aircraft__aircraft_id__verify_device_post",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Verify Device V1 Registry Aircraft  Aircraft Id  Verify Device Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/aircraft/{aircraft_id}/verify-registration": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Verify Registration",
+    "description": "Tra số đăng ký Việt Nam qua mô-đun I-02. Khớp sê-ri và còn hiệu lực thì tạo giấy chứng nhận đăng ký đã xác nhận.",
+    "operationId": "verify_registration_v1_registry_aircraft__aircraft_id__verify_registration_post",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Verify Registration V1 Registry Aircraft  Aircraft Id  Verify Registration Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/aircraft/{aircraft_id}/conformance": {
+   "post": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Record Conformance",
+    "description": "Biên bản có hiệu lực 12 tháng hoặc đến khi đổi phương tiện, phần mềm bay tự động hay cấu hình vô tuyến.",
+    "operationId": "record_conformance_v1_registry_aircraft__aircraft_id__conformance_post",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ConformanceIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Record Conformance V1 Registry Aircraft  Aircraft Id  Conformance Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/registry/eligibility": {
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "Eligibility",
+    "description": "Xem trước điều kiện hồ sơ cho một khung bay. Việc chặn và ghi lý do do dịch vụ xếp lịch làm.",
+    "operationId": "eligibility_v1_registry_eligibility_get",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     },
+     {
+      "name": "pilot_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Pilot Id"
+      }
+     },
+     {
+      "name": "start",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date-time",
+       "title": "Start"
+      }
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date-time",
+       "title": "End"
+      }
+     },
+     {
+      "name": "bvlos",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": true,
+       "title": "Bvlos"
+      }
+     },
+     {
+      "name": "stage",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "request",
+        "final"
+       ],
+       "type": "string",
+       "default": "request",
+       "title": "Stage"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Eligibility V1 Registry Eligibility Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/flights": {
    "post": {
     "tags": [
@@ -585,6 +1401,368 @@
  },
  "components": {
   "schemas": {
+   "AircraftIn": {
+    "properties": {
+     "uas_id": {
+      "type": "string",
+      "maxLength": 40,
+      "minLength": 4,
+      "title": "Uas Id",
+      "description": "Số sê-ri ANSI/CTA-2063-A"
+     },
+     "vn_registration_no": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 40
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vn Registration No"
+     },
+     "model": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model"
+     },
+     "mtow_kg": {
+      "type": "number",
+      "exclusiveMinimum": 0.0,
+      "title": "Mtow Kg"
+     },
+     "max_speed_ms": {
+      "type": "number",
+      "exclusiveMinimum": 0.0,
+      "title": "Max Speed Ms"
+     },
+     "in_testing": {
+      "type": "boolean",
+      "title": "In Testing",
+      "default": true
+     },
+     "flight_mgmt_device_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flight Mgmt Device Id"
+     },
+     "config_ref": {
+      "type": "string",
+      "maxLength": 100,
+      "title": "Config Ref",
+      "description": "Phiên bản phần mềm bay tự động và cấu hình vô tuyến",
+      "default": ""
+     },
+     "weather_limits": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weather Limits"
+     }
+    },
+    "type": "object",
+    "required": [
+     "uas_id",
+     "mtow_kg",
+     "max_speed_ms"
+    ],
+    "title": "AircraftIn"
+   },
+   "AircraftPatch": {
+    "properties": {
+     "vn_registration_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vn Registration No"
+     },
+     "in_testing": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "In Testing"
+     },
+     "flight_mgmt_device_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flight Mgmt Device Id"
+     },
+     "config_ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Config Ref"
+     },
+     "weather_limits": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weather Limits"
+     }
+    },
+    "type": "object",
+    "title": "AircraftPatch"
+   },
+   "ConformanceIn": {
+    "properties": {
+     "test": {
+      "type": "string",
+      "enum": [
+       "CT-1",
+       "CT-2",
+       "CT-3",
+       "CT-4",
+       "CT-5",
+       "CT-6",
+       "CT-7",
+       "CT-8"
+      ],
+      "title": "Test"
+     },
+     "passed": {
+      "type": "boolean",
+      "title": "Passed"
+     },
+     "tested_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Tested At"
+     },
+     "measured": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Measured"
+     },
+     "report_ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Report Ref"
+     }
+    },
+    "type": "object",
+    "required": [
+     "test",
+     "passed",
+     "tested_at"
+    ],
+    "title": "ConformanceIn"
+   },
+   "CustomerIn": {
+    "properties": {
+     "org_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Org Id"
+     },
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "tier": {
+      "type": "string",
+      "enum": [
+       "A",
+       "B",
+       "C"
+      ],
+      "title": "Tier",
+      "default": "C"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "operator",
+       "training"
+      ],
+      "title": "Kind",
+      "default": "operator"
+     }
+    },
+    "type": "object",
+    "required": [
+     "org_id",
+     "name"
+    ],
+    "title": "CustomerIn"
+   },
+   "CustomerPatch": {
+    "properties": {
+     "tier": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "A",
+         "B",
+         "C"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tier"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "active",
+         "suspended"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     }
+    },
+    "type": "object",
+    "title": "CustomerPatch"
+   },
+   "DocumentIn": {
+    "properties": {
+     "owner_type": {
+      "type": "string",
+      "enum": [
+       "aircraft",
+       "pilot",
+       "customer"
+      ],
+      "title": "Owner Type"
+     },
+     "owner_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Owner Id"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "registration_certificate",
+       "temporary_registration",
+       "technical_status_certificate",
+       "pilot_licence",
+       "test_permit",
+       "flight_permit",
+       "insurance"
+      ],
+      "title": "Kind"
+     },
+     "number": {
+      "type": "string",
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Number"
+     },
+     "valid_from": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Valid From"
+     },
+     "valid_to": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Valid To"
+     },
+     "file_ref": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "File Ref"
+     }
+    },
+    "type": "object",
+    "required": [
+     "owner_type",
+     "owner_id",
+     "kind",
+     "number"
+    ],
+    "title": "DocumentIn"
+   },
    "FlightIn": {
     "properties": {
      "request_ref": {
@@ -646,6 +1824,33 @@
      "kind"
     ],
     "title": "OrgIn"
+   },
+   "PilotIn": {
+    "properties": {
+     "full_name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Full Name"
+     },
+     "unified_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 64
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unified Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "full_name"
+    ],
+    "title": "PilotIn"
    },
    "Role": {
     "type": "string",
@@ -781,6 +1986,35 @@
      "type"
     ],
     "title": "ValidationError"
+   },
+   "VerifyIn": {
+    "properties": {
+     "decision": {
+      "type": "string",
+      "enum": [
+       "verified",
+       "rejected"
+      ],
+      "title": "Decision"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "decision"
+    ],
+    "title": "VerifyIn"
    }
   },
   "securitySchemes": {

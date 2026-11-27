@@ -91,7 +91,7 @@ def get_user(user_id: uuid.UUID, p: Principal = Depends(require(Perm.USER_MANAGE
 
 @router.post("/users/{user_id}/roles", status_code=201)
 def grant_role(user_id: uuid.UUID, body: RoleIn, request: Request,
-               p: Principal = Depends(require(Perm.USER_MANAGE, "user", "user_id")), s: Session = Depends(get_session)) -> dict:
+               p: Principal = Depends(require(Perm.USER_MANAGE, target_type="user", target_param="user_id")), s: Session = Depends(get_session)) -> dict:
     u = s.get(UserAccount, user_id)
     if not u:
         raise HTTPException(404, "không có tài khoản")
@@ -105,7 +105,7 @@ def grant_role(user_id: uuid.UUID, body: RoleIn, request: Request,
 
 @router.delete("/users/{user_id}/roles/{assignment_id}")
 def revoke_role(user_id: uuid.UUID, assignment_id: uuid.UUID, request: Request,
-                p: Principal = Depends(require(Perm.USER_MANAGE, "user", "user_id")), s: Session = Depends(get_session)) -> dict:
+                p: Principal = Depends(require(Perm.USER_MANAGE, target_type="user", target_param="user_id")), s: Session = Depends(get_session)) -> dict:
     u = s.get(UserAccount, user_id)
     ra = s.get(RoleAssignment, assignment_id)
     if not u or not ra or ra.user_id != u.id:
@@ -120,7 +120,7 @@ def revoke_role(user_id: uuid.UUID, assignment_id: uuid.UUID, request: Request,
 
 @router.post("/users/{user_id}/disable")
 def disable_user(user_id: uuid.UUID, request: Request,
-                 p: Principal = Depends(require(Perm.USER_MANAGE, "user", "user_id")), s: Session = Depends(get_session)) -> dict:
+                 p: Principal = Depends(require(Perm.USER_MANAGE, target_type="user", target_param="user_id")), s: Session = Depends(get_session)) -> dict:
     u = s.get(UserAccount, user_id)
     if not u:
         raise HTTPException(404, "không có tài khoản")

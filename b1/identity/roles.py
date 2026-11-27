@@ -29,6 +29,9 @@ class Perm(str, enum.Enum):
     PORTAL_ADMIN = "portal.admin"                  # quản trị cổng đăng ký bay và dữ liệu, không sửa dữ liệu bay
     USER_MANAGE = "user.manage"
     AUDIT_READ = "audit.read"
+    CUSTOMER_MANAGE = "customer.manage"        # lập hồ sơ khách hàng, đặt hạng
+    REGISTRY_VERIFY = "registry.verify"        # xác nhận giấy tờ, thiết bị quản lý hoạt động bay
+    CONFORMANCE_RECORD = "conformance.record"  # ghi kết quả CT-1…8
 
 
 R, P = Role, Perm
@@ -44,10 +47,15 @@ GRANTS: dict[Perm, frozenset[Role]] = {
     P.PORTAL_ADMIN: frozenset({R.LOW_ALTITUDE_COORDINATION}),
     P.USER_MANAGE: frozenset({R.IT_ENGINEER}),
     P.AUDIT_READ: frozenset({R.AUDITOR, R.IT_ENGINEER}),
+    # Ai lập hồ sơ khách và xác nhận giấy tờ: Đặc tả chưa ghi; đề xuất Trưởng bộ phận và Bộ phận điều phối bay tầm thấp.
+    P.CUSTOMER_MANAGE: frozenset({R.CORRIDOR_HEAD, R.LOW_ALTITUDE_COORDINATION}),
+    P.REGISTRY_VERIFY: frozenset({R.CORRIDOR_HEAD, R.LOW_ALTITUDE_COORDINATION}),
+    P.CONFORMANCE_RECORD: frozenset({R.CORRIDOR_HEAD, R.FLIGHT_TEST_TECHNICIAN}),
 }
 
 # Thao tác đặc quyền: luôn đòi xác thực đa yếu tố.
-PRIVILEGED: frozenset[Perm] = frozenset({P.FLIGHT_CLEAR_TAKEOFF, P.STOP_ISSUE, P.SCHEDULE_MANAGE, P.USER_MANAGE, P.PORTAL_ADMIN})
+PRIVILEGED: frozenset[Perm] = frozenset({P.FLIGHT_CLEAR_TAKEOFF, P.STOP_ISSUE, P.SCHEDULE_MANAGE, P.USER_MANAGE, P.PORTAL_ADMIN,
+                                         P.CUSTOMER_MANAGE, P.REGISTRY_VERIFY, P.CONFORMANCE_RECORD})
 
 
 def allowed(roles: frozenset[Role] | set[Role], perm: Perm) -> bool:

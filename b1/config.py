@@ -21,3 +21,7 @@ class Settings(BaseSettings):
     require_mfa_all: bool = False
 
     area_scope: str = "corridor-tn"
+
+    # Mô-đun kết nối I-02 (đăng ký phương tiện của Bộ Công an): mock | manual.
+    i02_connector: str = "mock"
+    i02_mock_file: str | None = None
