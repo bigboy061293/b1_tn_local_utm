@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from b1.audit.api import router as audit_router
 from b1.audit.service import AuditService
@@ -10,6 +11,17 @@ from b1.config import Settings
 from b1.db import init_db, make_engine, make_sessionmaker
 from b1.identity.api import router as identity_router
 from b1.operations.api import router as operations_router
+from b1.connectors import i02
+from b1.registry.api import router as registry_router
+from b1.registry.service import RegistryService
+from b1.operations.service import OperationsService
+from b1.scheduling.api import router as scheduling_router
+from b1.scheduling.service import SchedulingService
+from b1.notify.api import router as notify_router
+from b1.notify.service import NotifyService
+from b1.portal.routes import STATIC as PORTAL_STATIC
+from b1.portal.routes import router as portal_router
+from b1.gateway.api import router as gateway_router
 
 DISCLAIMERS = [
     "B1 không thay thế hệ thống quản lý bay quốc gia.",
@@ -30,8 +42,20 @@ def create_app(settings: Settings | None = None, *, create_schema: bool = True) 
     app.state.sessionmaker = make_sessionmaker(engine)
     app.state.audit = AuditService(app.state.sessionmaker)
     app.state.verifier = TokenVerifier(settings)
+    app.state.registry = RegistryService(app.state.sessionmaker)
+    app.state.i02 = i02.make(settings.i02_connector, settings.i02_mock_file)
+    app.state.operations = OperationsService(app.state.sessionmaker)
+    app.state.notify = NotifyService(app.state.sessionmaker)
+    app.state.scheduling = SchedulingService(app.state.sessionmaker, app.state.registry, app.state.operations, app.state.audit,
+                                             app.state.notify)
     app.include_router(identity_router)
     app.include_router(audit_router)
+    app.include_router(registry_router)
+    app.include_router(scheduling_router)
+    app.include_router(notify_router)
+    app.include_router(gateway_router)
+    app.include_router(portal_router)
+    app.mount("/portal/static", StaticFiles(directory=PORTAL_STATIC), name="portal-static")
     app.include_router(operations_router)
 
     @app.get("/v1/disclaimers", tags=["Chung"])

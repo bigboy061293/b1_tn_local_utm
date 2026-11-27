@@ -99,15 +99,22 @@ def current_principal(request: Request) -> Principal:
     return p
 
 
-def require(perm: Perm, target_type: str | None = None, target_param: str | None = None):
-    """Dependency FastAPI: chỉ cho qua khi người dùng có quyền `perm`; thao tác đặc quyền phải có MFA."""
+def require(*perms: Perm, target_type: str | None = None, target_param: str | None = None):
+    """Dependency FastAPI: cho qua khi người dùng có ít nhất một quyền trong `perms` (quyền đầu tiên khớp được dùng);
+    quyền đặc quyền phải có MFA. Mọi lần từ chối ghi nhật ký."""
 
     def dep(request: Request, p: Principal = Depends(current_principal)) -> Principal:
         target = {"type": target_type, "id": request.path_params.get(target_param)} if target_param else None
-        if not allowed(p.roles, perm):
-            raise _deny(request, p.actor(), perm.value, "vai trò không có quyền này", 403, target)
-        if perm in PRIVILEGED and not p.mfa:
-            raise _deny(request, p.actor(), perm.value, "thao tác đặc quyền phải xác thực đa yếu tố", 403, target)
+        held = [x for x in perms if allowed(p.roles, x)]
+        action = "|".join(x.value for x in perms)
+        if not held:
+            raise _deny(request, p.actor(), action, "vai trò không có quyền này", 403, target)
+        if not any(x not in PRIVILEGED or p.mfa for x in held):
+            raise _deny(request, p.actor(), action, "thao tác đặc quyền phải xác thực đa yếu tố", 403, target)
         return p
 
     return dep
+
+
+def has(p: Principal, perm: Perm) -> bool:
+    return allowed(p.roles, perm) and (perm not in PRIVILEGED or p.mfa)

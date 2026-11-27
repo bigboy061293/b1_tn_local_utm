@@ -18,6 +18,7 @@ class Role(str, enum.Enum):
     REGULATOR = "regulator"                                  # Bộ Quốc phòng, Bộ Công an, Ban công tác liên ngành
     LOW_ALTITUDE_COORDINATION = "low_altitude_coordination"  # Bộ phận điều phối bay tầm thấp
     AUDITOR = "auditor"                                      # Kiểm toán
+    PROVINCE_PORTAL = "province_portal"                      # tài khoản máy của cổng đăng ký bay tỉnh (I-01)
 
 
 class Perm(str, enum.Enum):
@@ -29,6 +30,10 @@ class Perm(str, enum.Enum):
     PORTAL_ADMIN = "portal.admin"                  # quản trị cổng đăng ký bay và dữ liệu, không sửa dữ liệu bay
     USER_MANAGE = "user.manage"
     AUDIT_READ = "audit.read"
+    CUSTOMER_MANAGE = "customer.manage"        # lập hồ sơ khách hàng, đặt hạng
+    REGISTRY_VERIFY = "registry.verify"        # xác nhận giấy tờ, thiết bị quản lý hoạt động bay
+    CONFORMANCE_RECORD = "conformance.record"  # ghi kết quả CT-1…8
+    PROVINCE_SUBMIT = "province.submit"        # I-01: cổng tỉnh gửi hồ sơ
 
 
 R, P = Role, Perm
@@ -44,10 +49,16 @@ GRANTS: dict[Perm, frozenset[Role]] = {
     P.PORTAL_ADMIN: frozenset({R.LOW_ALTITUDE_COORDINATION}),
     P.USER_MANAGE: frozenset({R.IT_ENGINEER}),
     P.AUDIT_READ: frozenset({R.AUDITOR, R.IT_ENGINEER}),
+    # Lập, duyệt hồ sơ khách hàng và xác nhận giấy tờ: chỉ Trưởng bộ phận quản lý hành lang bay (anh Vũ xác nhận 2026-11-28).
+    P.CUSTOMER_MANAGE: frozenset({R.CORRIDOR_HEAD}),
+    P.REGISTRY_VERIFY: frozenset({R.CORRIDOR_HEAD}),
+    P.CONFORMANCE_RECORD: frozenset({R.CORRIDOR_HEAD, R.FLIGHT_TEST_TECHNICIAN}),
+    P.PROVINCE_SUBMIT: frozenset({R.PROVINCE_PORTAL}),
 }
 
 # Thao tác đặc quyền: luôn đòi xác thực đa yếu tố.
-PRIVILEGED: frozenset[Perm] = frozenset({P.FLIGHT_CLEAR_TAKEOFF, P.STOP_ISSUE, P.SCHEDULE_MANAGE, P.USER_MANAGE, P.PORTAL_ADMIN})
+PRIVILEGED: frozenset[Perm] = frozenset({P.FLIGHT_CLEAR_TAKEOFF, P.STOP_ISSUE, P.SCHEDULE_MANAGE, P.USER_MANAGE, P.PORTAL_ADMIN,
+                                         P.CUSTOMER_MANAGE, P.REGISTRY_VERIFY, P.CONFORMANCE_RECORD})
 
 
 def allowed(roles: frozenset[Role] | set[Role], perm: Perm) -> bool:
