@@ -43,7 +43,40 @@ Flight Blender (Apache 2.0) được build từ mã nguồn, thay base image Wol
 
 **Đánh giá:** Flight Blender lập kế hoạch bay theo F3548 tốt ở mức bộ kiểm thử, nhưng phần Network Remote ID còn lỗi mà B1 sẽ phải tự sửa, vì Remote ID toàn tuyến là yêu cầu bắt buộc (AT-05). Phương án hợp lý cho D1 là dùng Flight Blender làm nền phần xếp lịch và ý định bay, kèm một đầu việc sửa hoặc thay phần Remote ID. Cách khác là tự xây USS trên nền thư viện của InterUSS. Cần thêm một lần chạy có OAuth đúng phiên bản để loại trừ 11 lỗi 401.
 
-## 4. Đối chiếu 4 điều kiện dùng thành phần có sẵn (Mục 3.4)
+## 4. Network Remote ID toàn tuyến (tiền đề AT-05)
+
+Kịch bản `poc/netrid_full_route.py`: phương tiện của bản sao số bay hết tim tuyến 54,71 km ở 30 m/s, cao 120 m AGL
+(1.825 giây). Telemetry 1 Hz được nạp vào USS cung cấp Remote ID (mock_uss `ridsp`), USS này đăng ký vùng dịch vụ
+(ISA) lên DSS. Một USS hiển thị (mock_uss `riddp`) bám theo phương tiện mỗi giây với khung nhìn 0,9 × 0,9 km, đi qua
+DSS để tìm và lấy dữ liệu như một màn hình giám sát thật. DSS v0.24.0 trên YugabyteDB.
+
+| Chỉ số (lần chạy 25/11/2026, `poc/results/netrid_full_route.json`) | Kết quả | Chỉ tiêu |
+|---|---|---|
+| Số giây lấy mẫu / số giây bay | 1.811 / 1.825 | |
+| Tỷ lệ số giây thấy chuyến bay | **100%** (1.811/1.811), không đoạn Km nào hở | 100% chiều dài |
+| Độ trễ dữ liệu khi hiển thị, p50 / p95 / lớn nhất | 0,58 s / 0,70 s / 1,36 s | ≤3 s |
+| Sai số vị trí so với telemetry đã nạp, p95 | 0,01 m | |
+| Thời gian một truy vấn hiển thị, p95 | 0,70 s | |
+
+Độ trễ dữ liệu = lúc USS hiển thị trả kết quả trừ thời điểm của điểm telemetry khớp vị trí hiển thị (API hiển thị
+F3411 không trả thời điểm, nên suy ra từ vị trí; độ phân giải 1 s). Vị trí hiển thị luôn là điểm của giây hiện tại,
+nên gần như toàn bộ độ trễ là thời gian truy vấn qua DSS và USS cung cấp. 14 giây không lấy mẫu là những giây có
+truy vấn trước đó chậm hơn 1 s.
+
+Hai lỗi của USS giả lập (không phải của DSS) gặp trong các lần chạy trước và cách tránh:
+
+1. mock_uss duyệt toàn bộ telemetry đã nạp ở mỗi truy vấn: nạp một lần cả chuyến 30 phút làm truy vấn chậm ~2 s
+   (chuyến 150 s: ~0,3 s), độ trễ p95 3,4 s. Cách tránh: nạp cuốn chiếu từng đoạn 120 s và gỡ đoạn đã bay qua.
+   USS thật nhận telemetry trực tiếp nên không có độ trễ này.
+2. Khi một ISA bị xoá, DSS báo cho đăng ký của USS hiển thị; mock_uss 0.38 lỗi khi đọc thông báo xoá
+   (`ValueError: No valid representation was specified for ISA`) và trả HTTP 400 khoảng 15 giây (106 giây mất
+   trong lần chạy gỡ đoạn sớm). Cách tránh: chỉ gỡ đoạn 300 s sau khi bay qua.
+
+Đánh giá: luồng Network Remote ID qua DSS đạt chỉ tiêu trên toàn tuyến với một phương tiện. Còn phải kiểm khi có
+USS cung cấp thật (Flight Blender hoặc USS hành lang) thay cho mock_uss, hai phương tiện đồng thời, và khung nhìn
+lớn hơn 2 km (F3411 chỉ trả cụm, không trả chi tiết từng chuyến).
+
+## 5. Đối chiếu 4 điều kiện dùng thành phần có sẵn (Mục 3.4)
 
 | Điều kiện | InterUSS DSS | Ghi chú |
 |---|---|---|
@@ -52,7 +85,7 @@ Flight Blender (Apache 2.0) được build từ mã nguồn, thay base image Wol
 | Thay được qua giao diện đã công bố | Đạt: giao diện DSS là API chuẩn F3548/F3411 | Có thể thay bằng DSS khác cùng chuẩn |
 | Thuyết minh trong hồ sơ thiết kế | Cần làm | Dùng tài liệu này làm cơ sở |
 
-## 5. Việc tiếp theo
+## 6. Việc tiếp theo
 
 1. Tìm nguyên nhân 11 lỗi 401 của Flight Blender (Mục 3), khoanh vùng lỗi Remote ID, rồi chạy kịch bản B1 với Flight Blender làm một trong hai USS.
-2. Network Remote ID toàn tuyến: đẩy telemetry từ bản sao số (`twin/sim.py`) vào USS qua F3411, kiểm ≥1 Hz trên 100% chiều dài (AT-05).
+2. ~~Network Remote ID toàn tuyến~~ (xong, Mục 4). Lặp lại với USS cung cấp thật và hai phương tiện đồng thời khi có USS hành lang.
