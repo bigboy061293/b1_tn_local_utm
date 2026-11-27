@@ -22,6 +22,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from b1.audit.service import Actor, AuditService
+from b1.notify.service import NotifyService
 from b1.operations.service import OperationsService
 from b1.registry.models import Aircraft, Customer
 from b1.registry.service import RegistryService
@@ -51,8 +52,17 @@ def order_key(r: FlightRequest, now: dt.datetime) -> tuple:
 
 
 class SchedulingService:
-    def __init__(self, sm: sessionmaker[Session], registry: RegistryService, operations: OperationsService, audit: AuditService):
-        self.sm, self.registry, self.ops, self.audit = sm, registry, operations, audit
+    def __init__(self, sm: sessionmaker[Session], registry: RegistryService, operations: OperationsService, audit: AuditService,
+                 notify: NotifyService | None = None):
+        self.sm, self.registry, self.ops, self.audit, self.notify = sm, registry, operations, audit, notify
+
+    def _tell(self, r: FlightRequest, kind: str, title: str, body: str, dedup: str | None = None) -> None:
+        if self.notify:
+            self.notify.notify(r.customer_id, kind, title, body, ref=r.queue_no, dedup_key=dedup)
+
+    @staticmethod
+    def _missing_text(missing) -> str:
+        return "; ".join(f"{m.as_dict()['message']} ({m.detail})" for m in missing)
 
     # --- thông số ---------------------------------------------------------------------------------------------------
     def params(self) -> Params:
@@ -100,6 +110,10 @@ class SchedulingService:
         self.audit.record(actor, "scheduling.request.blocked", "rejected", target_type="flight_request", target_id=r.id,
                           detail={"queue_no": r.queue_no, "stage": stage, "item_id": item and str(item.id),
                                   "run_id": run_id and str(run_id), "missing": [m.as_dict() for m in missing]})
+        titles = {"submit": "Hồ sơ chưa đủ, đã cấp số tạm", "recheck": "Hồ sơ vẫn chưa đủ", "run": "Chưa xếp lịch được do thiếu hồ sơ",
+                  "final": "Khung bay bị huỷ ở lần xác nhận cuối"}
+        self._tell(r, f"blocked_{stage}", f"{titles[stage]}: {r.queue_no}", self._missing_text(missing),
+                   dedup=f"blocked:{stage}:{r.id}:{run_id or ''}:{item.id if item else ''}:{r.queue_no}")
 
     # --- nhận yêu cầu -----------------------------------------------------------------------------------------------
     def submit(self, actor: Actor, customer_id: uuid.UUID, *, aircraft_id: uuid.UUID, pilot_id: uuid.UUID, priority_group: int,
@@ -158,6 +172,9 @@ class SchedulingService:
             s.refresh(r)
         self.audit.record(actor, "scheduling.request.submit", target_type="flight_request", target_id=r.id,
                           after={"queue_no": r.queue_no, "status": r.status, "items": [[str(i.day), i.slot] for i in items]})
+        if not r.provisional:
+            self._tell(r, "queued", f"Đã nhận yêu cầu {r.queue_no}", "Hồ sơ đầy đủ. Yêu cầu sẽ được xét ở kỳ xếp lịch 16:00.",
+                       dedup=f"queued:{r.id}")
         return r, elig.missing
 
     def recheck(self, actor: Actor, request_id: uuid.UUID, now: dt.datetime | None = None) -> tuple[FlightRequest, list]:
@@ -180,6 +197,8 @@ class SchedulingService:
                 s.commit()
                 self.audit.record(actor, "scheduling.request.complete", target_type="flight_request", target_id=r.id,
                                   before=before, after={"queue_no": r.queue_no, "status": r.status})
+                self._tell(r, "queued", f"Hồ sơ đã đủ, số chính thức {r.queue_no}",
+                           "Giữ nguyên thời điểm đến ban đầu. Yêu cầu sẽ được xét ở kỳ xếp lịch 16:00.", dedup=f"queued:{r.id}")
             else:
                 self._log_block(s, actor, r, "recheck", elig.missing)
                 s.commit()
@@ -191,6 +210,8 @@ class SchedulingService:
             it.status, it.last_reason = "cancelled", "HOLD_EXPIRED"
         self.audit.record(actor, "scheduling.request.expire", target_type="flight_request", target_id=r.id,
                           detail={"queue_no": r.queue_no, "hold_until": r.hold_until})
+        self._tell(r, "expired", f"Số tạm {r.queue_no} hết hạn giữ chỗ", "Hồ sơ không được bổ sung trong 3 ngày làm việc. "
+                   "Vui lòng nộp yêu cầu mới.", dedup=f"expired:{r.id}")
 
     def cancel(self, actor: Actor, request_id: uuid.UUID) -> FlightRequest:
         with self.sm() as s:
@@ -283,6 +304,9 @@ class SchedulingService:
                     reason = None
                 if reason:
                     i.status, i.last_reason, i.decided_in_run = "not_scheduled", reason, run_id
+                    self._tell(r, "not_scheduled", f"Không xếp được khung {i.day} khung {i.slot + 1} ({r.queue_no})",
+                               {"BLOCK_CLOSED": "Khối chưa mở.", "CORRIDOR_FULL": "Hành lang đã đủ 2 chuyến trong khung này.",
+                                "BLOCK_TAKEN": "Khối đã được xếp cho yêu cầu ưu tiên hơn."}[reason], dedup=f"ns:{i.id}")
                     decisions.append({"queue_no": r.queue_no, "item_id": str(i.id), "day": str(i.day), "slot": i.slot,
                                       "decision": "not_scheduled", "reason": reason})
                     continue
@@ -290,6 +314,9 @@ class SchedulingService:
                                                      starts_at=i.starts_at, ends_at=i.ends_at, block_ids=r.block_ids, bvlos=r.bvlos)
                 i.status, i.last_reason, i.decided_in_run = "scheduled", None, run_id
                 here.append(blocks)
+                self._tell(r, "scheduled", f"Đã xếp lịch {i.day} khung {i.slot + 1} ({r.queue_no})",
+                           f"Từ {i.starts_at.astimezone(TZ):%H:%M} đến {i.ends_at.astimezone(TZ):%H:%M} ngày {i.day:%d/%m/%Y}, "
+                           f"{', '.join(r.block_ids)}. Đây là lịch bay nội bộ của hành lang, không phải phép bay.", dedup=f"sch:{i.id}")
                 decisions.append({"queue_no": r.queue_no, "item_id": str(i.id), "day": str(i.day), "slot": i.slot,
                                   "decision": "scheduled", "flight_id": str(i.flight_id)})
             s.flush()
@@ -310,7 +337,17 @@ class SchedulingService:
                 decisions.append({"queue_no": r.queue_no, "item_id": str(i.id), "day": str(i.day), "slot": i.slot,
                                   "decision": "cancelled", "reason": [m.rule for m in elig.missing]})
 
-            # 6. Trạng thái yêu cầu và mốc 3 ngày làm việc.
+            # 6. Nhắc việc T − 7, T − 3, T − 1 (ngày lịch) cho khung đã xếp.
+            for i in s.scalars(select(RequestItem).where(RequestItem.status == "scheduled", RequestItem.day >= tomorrow)).all():
+                r = reqs.get(i.request_id) or s.get(FlightRequest, i.request_id)
+                for k in (1, 3, 7):  # mốc gần nhất đã tới
+                    if (i.day - today).days <= k:
+                        self._tell(r, f"reminder_t{k}", f"Nhắc lịch bay T − {k}: {i.day:%d/%m/%Y} khung {i.slot + 1} ({r.queue_no})",
+                                   "Kiểm tra lại hồ sơ, bảo hiểm và phương tiện." + (" Hồ sơ được xác nhận lần cuối ở mốc T − 3 ngày làm việc."
+                                                                                    if k == 7 else ""), dedup=f"rem{k}:{i.id}")
+                        break  # mỗi kỳ chỉ nhắc mốc gần nhất
+
+            # 7. Trạng thái yêu cầu và mốc 3 ngày làm việc.
             overdue = []
             for r in reqs.values():
                 its = s.scalars(select(RequestItem).where(RequestItem.request_id == r.id)).all()
