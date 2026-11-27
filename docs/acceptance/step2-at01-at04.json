@@ -1,0 +1,475 @@
+{
+ "run_at": "2026-11-27T08:33:24+00:00",
+ "base": "http://localhost:8011",
+ "run_tag": "a9549f",
+ "scheduling_run": {
+  "id": "51951f27-028f-4982-810b-7ccc5cd3309c",
+  "summary": {
+   "blocked": 8,
+   "scheduled": 2,
+   "cancelled": 1,
+   "overdue_requests": []
+  }
+ },
+ "at01": {
+  "cases": [
+   {
+    "case": "thieu-dang-ky",
+    "expected_rule": "REGISTRATION",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0001",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "REGISTRATION"
+     ],
+     [
+      "submit",
+      "REGISTRATION"
+     ]
+    ],
+    "audit_rules": [
+     "REGISTRATION"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "dang-ky-chua-xac-nhan",
+    "expected_rule": "REGISTRATION",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0002",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "REGISTRATION"
+     ],
+     [
+      "submit",
+      "REGISTRATION"
+     ]
+    ],
+    "audit_rules": [
+     "REGISTRATION"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "thieu-tinh-trang-ky-thuat",
+    "expected_rule": "TECHNICAL_STATUS",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0003",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "TECHNICAL_STATUS"
+     ],
+     [
+      "submit",
+      "TECHNICAL_STATUS"
+     ]
+    ],
+    "audit_rules": [
+     "TECHNICAL_STATUS"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "thieu-giay-phep-dieu-khien",
+    "expected_rule": "PILOT_LICENCE",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0004",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "PILOT_LICENCE"
+     ],
+     [
+      "submit",
+      "PILOT_LICENCE"
+     ]
+    ],
+    "audit_rules": [
+     "PILOT_LICENCE"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "thieu-thiet-bi-quan-ly",
+    "expected_rule": "FLIGHT_MGMT_DEVICE",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0005",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "FLIGHT_MGMT_DEVICE"
+     ],
+     [
+      "submit",
+      "FLIGHT_MGMT_DEVICE"
+     ]
+    ],
+    "audit_rules": [
+     "FLIGHT_MGMT_DEVICE"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "thieu-phep-bay",
+    "expected_rule": "PERMIT",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0006",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "PERMIT"
+     ],
+     [
+      "submit",
+      "PERMIT"
+     ]
+    ],
+    "audit_rules": [
+     "PERMIT"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "thieu-ct-3",
+    "expected_rule": "CONFORMANCE",
+    "expected_stage": "submit",
+    "queue_no_at_submit": "TAM-20261127-0007",
+    "status": "provisional",
+    "items": [
+     [
+      "requested",
+      null
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "CONFORMANCE"
+     ],
+     [
+      "submit",
+      "CONFORMANCE"
+     ]
+    ],
+    "audit_rules": [
+     "CONFORMANCE"
+    ],
+    "audit_records": 2,
+    "pass": true
+   },
+   {
+    "case": "ct-mat-hieu-luc-do-doi-cau-hinh",
+    "expected_rule": "CONFORMANCE",
+    "expected_stage": "run",
+    "queue_no_at_submit": "HL-20261127-0002",
+    "status": "queued",
+    "items": [
+     [
+      "requested",
+      "INELIGIBLE"
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "run",
+      "CONFORMANCE"
+     ]
+    ],
+    "audit_rules": [
+     "CONFORMANCE"
+    ],
+    "audit_records": 1,
+    "pass": true
+   },
+   {
+    "case": "thieu-bao-hiem",
+    "expected_rule": "INSURANCE",
+    "expected_stage": "final",
+    "queue_no_at_submit": "HL-20261127-0003",
+    "status": "not_scheduled",
+    "items": [
+     [
+      "cancelled",
+      "FINAL_CHECK_FAILED"
+     ]
+    ],
+    "blocked": true,
+    "block_reasons": [
+     [
+      "final",
+      "INSURANCE"
+     ]
+    ],
+    "audit_rules": [
+     "INSURANCE"
+    ],
+    "audit_records": 1,
+    "pass": true
+   }
+  ],
+  "total": 9,
+  "blocked": 9,
+  "logged": 9,
+  "pass": true
+ },
+ "at04": {
+  "flight_id": "cb21a4e8-4d75-4b69-899f-a139e62ae207",
+  "attempts": [
+   {
+    "role": "corridor_head",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "thao tác đặc quyền phải xác thực đa yếu tố"
+   },
+   {
+    "role": "duty_safety_officer",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "thao tác đặc quyền phải xác thực đa yếu tố"
+   },
+   {
+    "role": "radio_network_engineer",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "it_engineer",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "flight_test_technician",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "customer_operator",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "customer_training",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "regulator",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "low_altitude_coordination",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "auditor",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "province_portal",
+    "mfa": false,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "radio_network_engineer",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "it_engineer",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "flight_test_technician",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "customer_operator",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "customer_training",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "regulator",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "low_altitude_coordination",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "auditor",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "province_portal",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   },
+   {
+    "role": "duty_safety_officer",
+    "mfa": true,
+    "http": 200,
+    "allowed": true,
+    "detail": "cleared"
+   },
+   {
+    "role": "corridor_head",
+    "mfa": true,
+    "http": 409,
+    "allowed": false,
+    "detail": "chuyến bay đang ở trạng thái cleared"
+   },
+   {
+    "role": "customer_operator (khách của chuyến)",
+    "mfa": true,
+    "http": 403,
+    "allowed": false,
+    "detail": "vai trò không có quyền này"
+   }
+  ],
+  "allowed": [
+   [
+    "duty_safety_officer",
+    true
+   ]
+  ],
+  "denied": 22,
+  "denied_logged": 21,
+  "rejected_after_clearance": 1,
+  "flight_state": "cleared",
+  "head_with_mfa_allowed_on_second_flight": true,
+  "pass": true
+ },
+ "twin_flight": {
+  "uas_id": "SIM0001B1TNA9549F",
+  "block": "block-1",
+  "distance_km": 14.77,
+  "duration_s": 493.0,
+  "telemetry_samples_i07": 4931
+ },
+ "audit_chain": {
+  "ok": true,
+  "records": 302,
+  "head": "798b03cefb164d10990f90d80a657e1241b3b8ed738573873bad39243f896cc0"
+ },
+ "control": {
+  "case": "doi-chung-ho-so-du",
+  "status": "scheduled",
+  "items": [
+   [
+    "scheduled",
+    null
+   ]
+  ]
+ }
+}
