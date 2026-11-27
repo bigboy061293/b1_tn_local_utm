@@ -139,3 +139,15 @@ def test_i02_mock_rejections(client, onboard, reg, serial, problem):
     assert ac.status_code == 201, ac.text
     r = client.post(f"/v1/registry/aircraft/{ac.json()['id']}/verify-registration", headers=o["customer"]).json()
     assert r["verified"] is False and problem in r["problems"]
+
+
+@pytest.mark.parametrize("role", [r for r in Role if r is not Role.CORRIDOR_HEAD])
+def test_only_corridor_head_manages_customers_and_verifies(client, make_user, onboard, role):
+    """Anh Vũ chốt 2026-11-28: chỉ Trưởng bộ phận lập, duyệt hồ sơ khách hàng và xác nhận giấy tờ."""
+    o = onboard(skip={"verify:insurance"})
+    _, h = make_user(role, mfa=True)
+    assert client.post("/v1/registry/customers", json={"org_id": str(o["org_id"]), "name": "x"}, headers=h).status_code == 403
+    assert client.patch(f"/v1/registry/customers/{o['customer_id']}", json={"tier": "A"}, headers=h).status_code == 403
+    r = client.post(f"/v1/registry/documents/{o['docs']['insurance']}/verify", headers=h, json={"decision": "verified"})
+    assert r.status_code == 403
+    assert client.post(f"/v1/registry/aircraft/{o['aircraft_id']}/verify-device", headers=h).status_code == 403

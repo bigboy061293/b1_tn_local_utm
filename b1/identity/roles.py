@@ -49,9 +49,9 @@ GRANTS: dict[Perm, frozenset[Role]] = {
     P.PORTAL_ADMIN: frozenset({R.LOW_ALTITUDE_COORDINATION}),
     P.USER_MANAGE: frozenset({R.IT_ENGINEER}),
     P.AUDIT_READ: frozenset({R.AUDITOR, R.IT_ENGINEER}),
-    # Ai lập hồ sơ khách và xác nhận giấy tờ: Đặc tả chưa ghi; đề xuất Trưởng bộ phận và Bộ phận điều phối bay tầm thấp.
-    P.CUSTOMER_MANAGE: frozenset({R.CORRIDOR_HEAD, R.LOW_ALTITUDE_COORDINATION}),
-    P.REGISTRY_VERIFY: frozenset({R.CORRIDOR_HEAD, R.LOW_ALTITUDE_COORDINATION}),
+    # Lập, duyệt hồ sơ khách hàng và xác nhận giấy tờ: chỉ Trưởng bộ phận quản lý hành lang bay (anh Vũ xác nhận 2026-11-28).
+    P.CUSTOMER_MANAGE: frozenset({R.CORRIDOR_HEAD}),
+    P.REGISTRY_VERIFY: frozenset({R.CORRIDOR_HEAD}),
     P.CONFORMANCE_RECORD: frozenset({R.CORRIDOR_HEAD, R.FLIGHT_TEST_TECHNICIAN}),
     P.PROVINCE_SUBMIT: frozenset({R.PROVINCE_PORTAL}),
 }

@@ -5,7 +5,7 @@ Theo Đặc tả B1 v0.1: F-01, Mục 4.3 (điều kiện chặn), Mục 5.3 (CT
 
 ## Luồng hồ sơ
 
-1. Trưởng bộ phận hoặc Bộ phận điều phối bay tầm thấp lập hồ sơ khách hàng gắn với một tổ chức, đặt hạng A/B/C.
+1. Trưởng bộ phận quản lý hành lang bay lập và duyệt hồ sơ khách hàng gắn với một tổ chức, đặt hạng A/B/C.
 2. Tài khoản khách hàng khai người điều khiển, phương tiện (UAS ID, số đăng ký Việt Nam, khối lượng cất cánh tối đa,
    tốc độ lớn nhất, thiết bị quản lý hoạt động bay, phiên bản phần mềm và cấu hình vô tuyến) và nộp giấy tờ.
 3. Cán bộ xác nhận hoặc từ chối từng giấy tờ. Số đăng ký có thể tra qua mô-đun I-02; khớp sê-ri và còn hiệu lực thì
@@ -28,7 +28,7 @@ Chỉ giấy tờ đã xác nhận và còn hiệu lực trọn khung bay mới 
 | `TECHNICAL_STATUS` | Phương tiện đang thử nghiệm thiếu Giấy xác nhận tình trạng kỹ thuật còn hiệu lực |
 | `PILOT_LICENCE` | Người điều khiển thiếu giấy phép (bay ngoài tầm nhìn hoặc phương tiện từ 2 kg) |
 | `FLIGHT_MGMT_DEVICE` | Thiếu thiết bị quản lý hoạt động bay đã được xác nhận |
-| `PERMIT` | Thiếu giấy phép thử nghiệm hoặc phép bay còn hiệu lực |
+| `PERMIT` | Thiếu giấy phép thử nghiệm hoặc phép bay còn hiệu lực. Phải có ngay khi đặt lịch (anh Vũ xác nhận 2026-11-28) |
 | `CONFORMANCE` | Chưa đạt đủ CT-1…CT-8 còn hiệu lực với cấu hình hiện tại |
 | `INSURANCE` | Thiếu bảo hiểm còn hiệu lực (kiểm lại tại T − 3 ngày làm việc) |
 
@@ -41,9 +41,11 @@ I-02 chưa có giao thức. `B1_I02_CONNECTOR=mock` đọc `config/mock/i02_regi
 lệ, bị thu hồi, hết hạn); `manual` trả 503 và cán bộ đối chiếu thủ công. Khi Bộ Công an công bố API chỉ thêm một lớp
 kết nối mới, không sửa dịch vụ đăng ký.
 
+## Đã chốt
+
+- Chỉ Trưởng bộ phận quản lý hành lang bay lập, duyệt hồ sơ khách hàng và xác nhận giấy tờ (anh Vũ, 2026-11-28).
+- Giấy phép thử nghiệm hoặc phép bay phải có trước khi đặt lịch; thiếu thì bị chặn ngay khi nộp (anh Vũ, 2026-11-28).
+
 ## Việc còn mở
 
-1. Ai được lập hồ sơ khách và xác nhận giấy tờ: bản này cho Trưởng bộ phận và Bộ phận điều phối bay tầm thấp; Đặc tả chưa ghi.
-2. Giấy phép thử nghiệm hoặc phép bay (`PERMIT`) có phải có ngay khi đặt chỗ không, hay chỉ trước T − 3: F-01 ghi
-   thiếu thì chặn xếp lịch, nên bản này chặn ngay. Nếu phép bay thường được cấp sau khi có lịch thì chuyển sang kiểm ở T − 3.
-3. Tệp giấy tờ: hiện chỉ lưu tham chiếu `file_ref`; kho tệp có mã hoá làm ở bước 6 cùng quy chế dữ liệu.
+1. Tệp giấy tờ: hiện chỉ lưu tham chiếu `file_ref`; kho tệp có mã hoá làm ở bước 6 cùng quy chế dữ liệu.

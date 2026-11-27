@@ -28,8 +28,8 @@ AT-04. Mã: `b1/identity`, `b1/audit`, `b1/auth.py`.
 | `portal.admin` (MFA) |  |  |  |  |  |  |  |  | ✓ |  |  |
 | `user.manage` (MFA) |  |  |  | ✓ |  |  |  |  |  |  |  |
 | `audit.read` |  |  |  | ✓ |  |  |  |  |  | ✓ |  |
-| `customer.manage` (MFA) | ✓ |  |  |  |  |  |  |  | ✓ |  |  |
-| `registry.verify` (MFA) | ✓ |  |  |  |  |  |  |  | ✓ |  |  |
+| `customer.manage` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |  |
+| `registry.verify` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |  |
 | `conformance.record` (MFA) | ✓ |  |  |  | ✓ |  |  |  |  |  |  |
 | `province.submit` |  |  |  |  |  |  |  |  |  |  | ✓ |
 
