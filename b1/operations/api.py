@@ -47,7 +47,7 @@ def get_flight(flight_id: uuid.UUID, p: Principal = Depends(require(Perm.FLIGHT_
 
 @router.post("/{flight_id}/takeoff-clearance")
 def clear_takeoff(flight_id: uuid.UUID, request: Request,
-                  p: Principal = Depends(require(Perm.FLIGHT_CLEAR_TAKEOFF, "flight", "flight_id")),
+                  p: Principal = Depends(require(Perm.FLIGHT_CLEAR_TAKEOFF, target_type="flight", target_param="flight_id")),
                   s: Session = Depends(get_session)) -> dict:
     """F-04: chỉ Cán bộ an toàn bay trực ban và Trưởng bộ phận, có MFA. Không phải phép bay (Đặc tả Mục 1)."""
     f = s.get(Flight, flight_id, with_for_update=True)

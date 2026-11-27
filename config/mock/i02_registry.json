@@ -1,0 +1,13 @@
+{
+ "_note": "Dữ liệu giả lập I-02 (hệ thống đăng ký phương tiện bay của Bộ Công an). Không phải dữ liệu thật.",
+ "records": [
+  {"registration_no": "VN-TEST-0001", "uas_serial": "1596F3YB1234567890", "status": "valid",
+   "valid_from": "2026-01-01T00:00:00Z", "valid_to": "2028-12-31T23:59:59Z", "flight_mgmt_device_id": "QLHD-0001"},
+  {"registration_no": "VN-TEST-0002", "uas_serial": "1596F3YB0000000002", "status": "valid",
+   "valid_from": "2026-01-01T00:00:00Z", "valid_to": "2028-12-31T23:59:59Z", "flight_mgmt_device_id": "QLHD-0002"},
+  {"registration_no": "VN-TEST-0003", "uas_serial": "1596F3YB0000000003", "status": "revoked",
+   "valid_from": "2025-01-01T00:00:00Z", "valid_to": "2027-12-31T23:59:59Z", "flight_mgmt_device_id": "QLHD-0003"},
+  {"registration_no": "VN-TEST-0004", "uas_serial": "1596F3YB0000000004", "status": "valid",
+   "valid_from": "2025-01-01T00:00:00Z", "valid_to": "2026-06-30T23:59:59Z", "flight_mgmt_device_id": "QLHD-0004"}
+ ]
+}
