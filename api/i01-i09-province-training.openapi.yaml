@@ -12,7 +12,7 @@ info:
     - Xác thực: OAuth 2.0 client credentials, JWT ký số, thời hạn ≤1 giờ, có phạm vi quyền.
     - Bản chạy được: `b1/gateway/api.py`, đường dẫn thật `/gateway/v1/...`. Giấy tờ gửi qua I-01 vào trạng thái "đã nộp",
       chỉ được tính khi cán bộ hành lang xác nhận; khách hàng phải được bộ phận quản lý hành lang lập hồ sơ trước (theo
-      mã định danh thống nhất), nếu không hồ sơ bị từ chối với CUSTOMER_UNKNOWN. Gửi lại cùng externalRef trả kết quả cũ.
+      mã định danh thống nhất), nếu không hồ sơ bị từ chối với CUSTOMER_UNKNOWN, B1 không tự tạo khách (anh Vũ chốt 2026-11-28). Gửi lại cùng externalRef trả kết quả cũ.
       Webhook đã ký JWS chưa làm.
     - Câu hỏi mở: định dạng hồ sơ gốc của cổng tỉnh; tỉnh có cần đẩy tệp giấy tờ hay chỉ số hiệu; giờ bay đào tạo
       tính theo cất – hạ cánh hay theo armed.
