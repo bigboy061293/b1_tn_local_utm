@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: B1 – I-01 Cổng đăng ký bay của tỉnh và I-09 Bộ phận đào tạo
-  version: 0.1.0-draft
+  version: 0.2.0-draft
   description: |
     Bản nháp đề xuất của đội dự án. Đặc tả B1 v0.1 ghi I-01, I-09 "định nghĩa trong giai đoạn chuẩn bị",
     nên các trường dưới đây cần được cổng của tỉnh và bộ phận đào tạo xác nhận.
@@ -10,6 +10,10 @@ info:
       Chiều B1 → cổng tỉnh dùng webhook đã ký.
     - I-09 (B1 cung cấp, chỉ đọc): lịch đã xếp và giờ bay thực tế của chuyến đào tạo.
     - Xác thực: OAuth 2.0 client credentials, JWT ký số, thời hạn ≤1 giờ, có phạm vi quyền.
+    - Bản chạy được: `b1/gateway/api.py`, đường dẫn thật `/gateway/v1/...`. Giấy tờ gửi qua I-01 vào trạng thái "đã nộp",
+      chỉ được tính khi cán bộ hành lang xác nhận; khách hàng phải được bộ phận quản lý hành lang lập hồ sơ trước (theo
+      mã định danh thống nhất), nếu không hồ sơ bị từ chối với CUSTOMER_UNKNOWN. Gửi lại cùng externalRef trả kết quả cũ.
+      Webhook đã ký JWS chưa làm.
     - Câu hỏi mở: định dạng hồ sơ gốc của cổng tỉnh; tỉnh có cần đẩy tệp giấy tờ hay chỉ số hiệu; giờ bay đào tạo
       tính theo cất – hạ cánh hay theo armed.
 servers:
@@ -152,11 +156,19 @@ components:
       properties:
         applicationId: { type: string, format: uuid }
         externalRef: { type: string }
-        queueNo: { type: string, pattern: '^HL-\d{8}-\d{4}$' }
+        queueNo: { type: string, pattern: '^HL-\d{8}-\d{4}$', description: Số thứ tự chính thức đầu tiên (khi đã có) }
+        queueNos:
+          type: array
+          description: Mọi số của hồ sơ; mỗi bộ khối khác nhau là một yêu cầu bay. Số tạm có dạng TAM-YYYYMMDD-NNNN.
+          items: { type: string, pattern: '^(HL|TAM)-\d{8}-\d{4}$' }
         provisional: { type: boolean }
         state: { type: string, enum: [received, incomplete, blocked, queued, scheduled, rejected, flown, closed] }
         blockReasons:
           type: array
+          description: |
+            Khi `incomplete`: mã điều kiện hồ sơ còn thiếu (REGISTRATION, TECHNICAL_STATUS, PILOT_LICENCE, FLIGHT_MGMT_DEVICE,
+            PERMIT, CONFORMANCE, INSURANCE). Khi `rejected`: CUSTOMER_UNKNOWN, CUSTOMER_SUSPENDED, AIRCRAFT_OTHER_CUSTOMER,
+            AIRCRAFT_INCOMPLETE, INVALID_REQUEST.
           items: { type: object, properties: { rule: { type: string }, detail: { type: string } } }
         scheduledSlots:
           type: array

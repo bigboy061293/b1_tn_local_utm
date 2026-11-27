@@ -55,6 +55,7 @@ def _get(s: Session, model, id_):
 class CustomerIn(BaseModel):
     org_id: uuid.UUID
     name: str = Field(min_length=1, max_length=200)
+    unified_id: str | None = Field(default=None, max_length=64)
     tier: Literal["A", "B", "C"] = "C"
     kind: Literal["operator", "training"] = "operator"
 

@@ -24,6 +24,7 @@ class Customer(_Stamp, Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     org_id: Mapped[uuid.UUID] = mapped_column(unique=True)  # tổ chức trong dịch vụ danh tính (tham chiếu, không khoá ngoại chéo schema)
     name: Mapped[str] = mapped_column(String(200))
+    unified_id: Mapped[str | None] = mapped_column(String(64), unique=True)  # mã định danh thống nhất (I-08), dùng cho I-01
     tier: Mapped[str] = mapped_column(String(1), default="C")  # hạng A/B/C, dùng khi xét trùng khung (Mục 4.3)
     kind: Mapped[str] = mapped_column(String(20), default="operator")  # operator | training
     status: Mapped[str] = mapped_column(String(20), default="active")

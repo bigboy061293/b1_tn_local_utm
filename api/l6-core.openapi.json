@@ -1812,6 +1812,94 @@
     }
    }
   },
+  "/gateway/v1/applications": {
+   "post": {
+    "tags": [
+     "I-01 Cổng tỉnh"
+    ],
+    "summary": "Submit Application",
+    "operationId": "submit_application_gateway_v1_applications_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApplicationIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Submit Application Gateway V1 Applications Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/gateway/v1/applications/{application_id}": {
+   "get": {
+    "tags": [
+     "I-01 Cổng tỉnh"
+    ],
+    "summary": "Get Application",
+    "operationId": "get_application_gateway_v1_applications__application_id__get",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Application Gateway V1 Applications  Application Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/flights": {
    "post": {
     "tags": [
@@ -2121,6 +2209,107 @@
     "type": "object",
     "title": "AircraftPatch"
    },
+   "AircraftRef": {
+    "properties": {
+     "uasId": {
+      "type": "string",
+      "maxLength": 40,
+      "minLength": 4,
+      "title": "Uasid"
+     },
+     "vnRegistrationNo": {
+      "type": "string",
+      "title": "Vnregistrationno"
+     },
+     "mtowKg": {
+      "type": "number",
+      "exclusiveMinimum": 0.0,
+      "title": "Mtowkg"
+     },
+     "maxSpeedMs": {
+      "anyOf": [
+       {
+        "type": "number",
+        "exclusiveMinimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Maxspeedms"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "uasId",
+     "vnRegistrationNo",
+     "mtowKg"
+    ],
+    "title": "AircraftRef"
+   },
+   "ApplicationIn": {
+    "properties": {
+     "externalRef": {
+      "type": "string",
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Externalref"
+     },
+     "customer": {
+      "$ref": "#/components/schemas/CustomerRef"
+     },
+     "pilot": {
+      "$ref": "#/components/schemas/PilotRef"
+     },
+     "aircraft": {
+      "$ref": "#/components/schemas/AircraftRef"
+     },
+     "priorityGroup": {
+      "type": "integer",
+      "maximum": 4.0,
+      "minimum": 1.0,
+      "title": "Prioritygroup"
+     },
+     "bvlos": {
+      "type": "boolean",
+      "title": "Bvlos",
+      "default": true
+     },
+     "training": {
+      "type": "boolean",
+      "title": "Training",
+      "default": false
+     },
+     "requestedSlots": {
+      "items": {
+       "$ref": "#/components/schemas/SlotRef"
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Requestedslots"
+     },
+     "documents": {
+      "items": {
+       "$ref": "#/components/schemas/DocRef"
+      },
+      "type": "array",
+      "title": "Documents",
+      "default": []
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "externalRef",
+     "customer",
+     "pilot",
+     "aircraft",
+     "priorityGroup",
+     "requestedSlots"
+    ],
+    "title": "ApplicationIn"
+   },
    "ConformanceIn": {
     "properties": {
      "test": {
@@ -2191,6 +2380,18 @@
       "minLength": 1,
       "title": "Name"
      },
+     "unified_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 64
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unified Id"
+     },
      "tier": {
       "type": "string",
       "enum": [
@@ -2254,6 +2455,70 @@
     },
     "type": "object",
     "title": "CustomerPatch"
+   },
+   "CustomerRef": {
+    "properties": {
+     "unifiedId": {
+      "type": "string",
+      "title": "Unifiedid"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "unifiedId",
+     "name"
+    ],
+    "title": "CustomerRef"
+   },
+   "DocRef": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "registration",
+       "temporary_registration",
+       "technical_status",
+       "pilot_licence",
+       "test_permit",
+       "flight_permit",
+       "insurance"
+      ],
+      "title": "Kind"
+     },
+     "number": {
+      "type": "string",
+      "title": "Number"
+     },
+     "validTo": {
+      "type": "string",
+      "format": "date",
+      "title": "Validto"
+     },
+     "fileUrl": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fileurl"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "kind",
+     "number",
+     "validTo"
+    ],
+    "title": "DocRef"
    },
    "DocumentIn": {
     "properties": {
@@ -2456,6 +2721,31 @@
     ],
     "title": "PilotIn"
    },
+   "PilotRef": {
+    "properties": {
+     "unifiedId": {
+      "type": "string",
+      "title": "Unifiedid"
+     },
+     "licenceNo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Licenceno"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "unifiedId"
+    ],
+    "title": "PilotRef"
+   },
    "RequestBody": {
     "properties": {
      "aircraft_id": {
@@ -2519,7 +2809,8 @@
      "customer_training",
      "regulator",
      "low_altitude_coordination",
-     "auditor"
+     "auditor",
+     "province_portal"
     ],
     "title": "Role"
    },
@@ -2546,6 +2837,43 @@
      "role"
     ],
     "title": "RoleIn"
+   },
+   "SlotRef": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+     },
+     "slotIndex": {
+      "type": "integer",
+      "maximum": 4.0,
+      "minimum": 1.0,
+      "title": "Slotindex"
+     },
+     "blockIds": {
+      "items": {
+       "type": "string",
+       "enum": [
+        "block-1",
+        "block-2",
+        "block-3",
+        "block-4"
+       ]
+      },
+      "type": "array",
+      "minItems": 1,
+      "title": "Blockids"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "date",
+     "slotIndex",
+     "blockIds"
+    ],
+    "title": "SlotRef"
    },
    "UserIn": {
     "properties": {

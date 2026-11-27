@@ -18,6 +18,7 @@ class Role(str, enum.Enum):
     REGULATOR = "regulator"                                  # Bộ Quốc phòng, Bộ Công an, Ban công tác liên ngành
     LOW_ALTITUDE_COORDINATION = "low_altitude_coordination"  # Bộ phận điều phối bay tầm thấp
     AUDITOR = "auditor"                                      # Kiểm toán
+    PROVINCE_PORTAL = "province_portal"                      # tài khoản máy của cổng đăng ký bay tỉnh (I-01)
 
 
 class Perm(str, enum.Enum):
@@ -32,6 +33,7 @@ class Perm(str, enum.Enum):
     CUSTOMER_MANAGE = "customer.manage"        # lập hồ sơ khách hàng, đặt hạng
     REGISTRY_VERIFY = "registry.verify"        # xác nhận giấy tờ, thiết bị quản lý hoạt động bay
     CONFORMANCE_RECORD = "conformance.record"  # ghi kết quả CT-1…8
+    PROVINCE_SUBMIT = "province.submit"        # I-01: cổng tỉnh gửi hồ sơ
 
 
 R, P = Role, Perm
@@ -51,6 +53,7 @@ GRANTS: dict[Perm, frozenset[Role]] = {
     P.CUSTOMER_MANAGE: frozenset({R.CORRIDOR_HEAD, R.LOW_ALTITUDE_COORDINATION}),
     P.REGISTRY_VERIFY: frozenset({R.CORRIDOR_HEAD, R.LOW_ALTITUDE_COORDINATION}),
     P.CONFORMANCE_RECORD: frozenset({R.CORRIDOR_HEAD, R.FLIGHT_TEST_TECHNICIAN}),
+    P.PROVINCE_SUBMIT: frozenset({R.PROVINCE_PORTAL}),
 }
 
 # Thao tác đặc quyền: luôn đòi xác thực đa yếu tố.
