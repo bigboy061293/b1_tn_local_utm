@@ -54,7 +54,7 @@ def stations_utm() -> dict[str, Point]:
 
 @dataclasses.dataclass
 class Fault:
-    kind: str          # offset | c2_lost | low_battery | backhaul_cellular | station_down | ups
+    kind: str          # offset | climb | c2_lost | low_battery | backhaul_cellular | station_down | ups
     start_s: float
     end_s: float
     value: float = 0.0  # offset: mét (dương = bên phải hướng bay); trạm: số thứ tự 1..5
@@ -100,8 +100,22 @@ class Aircraft:
         if any(f.kind == "low_battery" and f.active(t) for f in faults):
             battery = min(battery, 15.0)
         c2_lost = any(f.kind == "c2_lost" and f.active(t) for f in faults)
-        return {"x": x, "y": y, "km": d / 1000.0, "offset": offset, "track": track,
+        alt = self.alt + sum(f.value for f in faults if f.kind == "climb" and f.active(t))
+        return {"x": x, "y": y, "km": d / 1000.0, "offset": offset, "track": track, "alt": alt,
                 "battery": battery, "c2_lost": c2_lost, "speed": 0.0 if d >= self.line.length else self.speed}
+
+
+class ManLine:
+    """Tàu bay có người lái bay thẳng cắt ngang hành lang ở 1.500 m so với mực nước biển, 70 m/s."""
+
+    def __init__(self, line: LineString):
+        mid = line.interpolate(line.length * 0.15)
+        self.x0, self.y0 = mid.x - 30_000, mid.y - 10_000
+        self.vx, self.vy = 70.0 * 0.949, 70.0 * 0.316
+        self.track = round((math.degrees(math.atan2(self.vx, self.vy)) + 360) % 360, 1)
+
+    def at(self, t: float) -> tuple[float, float, float]:
+        return self.x0 + self.vx * t, self.y0 + self.vy * t, 1500.0
 
 
 def telemetry(ac: Aircraft, s: dict, now: dt.datetime) -> dict:
@@ -116,7 +130,7 @@ def telemetry(ac: Aircraft, s: dict, now: dt.datetime) -> dict:
         "uasId": ac.uas_id,
         "timeSource": iso_ms(now),
         "position": {"lat": round(lat, 7), "lon": round(lon, 7)},
-        "altitude": {"value": ac.alt, "reference": "AGL"},
+        "altitude": {"value": s.get("alt", ac.alt), "reference": "AGL"},
         "velocity": {"groundSpeed": s["speed"], "verticalSpeed": 0.0, "track": round(s["track"], 1)},
         "gnss": {"fixType": "3d", "satellites": 16, "hdop": 0.8},
         "energy": {"batteryPercent": round(s["battery"], 1), "voltage": round(42.0 + s["battery"] * 0.084, 2)},
@@ -147,6 +161,12 @@ def run(args: argparse.Namespace, out=sys.stdout) -> int:
     stations = stations_utm()
     faults = [Fault.parse(x) for x in args.inject]
     fleet = [Aircraft(line, args.start_km + i * args.spacing_km, args.speed, args.alt, f"SIM{i + 1:04d}B1TN") for i in range(args.count)]
+    for ac, fid, uas in zip(fleet, args.flight_id, args.uas_id):  # gán mã chuyến, UAS ID do B1 cấp
+        ac.flight_id, ac.uas_id = fid, uas
+    if args.uas_id:
+        for ac, uas in zip(fleet, args.uas_id):
+            ac.uas_id = uas
+    manned = ManLine(line) if args.adsb else None
     t0 = dt.datetime.fromisoformat(args.start).astimezone(dt.timezone.utc) if args.start else dt.datetime.now(dt.timezone.utc)
     dt_s = 1.0 / args.rate
     steps = int(args.duration * args.rate)
@@ -155,6 +175,10 @@ def run(args: argparse.Namespace, out=sys.stdout) -> int:
     for k in range(steps + 1):
         t = k * dt_s
         now = t0 + dt.timedelta(seconds=t)
+        if args.realtime:  # chờ tới đúng giờ của mẫu rồi mới phát, để giờ nguồn không đi trước đồng hồ thật
+            lag = (wall0 + t) - time.monotonic()
+            if lag > 0:
+                time.sleep(lag)
         whole_second = k % int(args.rate) == 0
         for ac in fleet:
             s = ac.state(t, faults)
@@ -178,6 +202,30 @@ def run(args: argparse.Namespace, out=sys.stdout) -> int:
                            "signalDbm": round(-40.0 - 20.0 * math.log10(max(dist, 1.0) / 10.0), 1)}
                     out.write(json.dumps({"interface": "I-06", "stationId": sid, "payload": rec}, ensure_ascii=False) + "\n")
                     emitted += 1
+        if whole_second and manned:
+            mx, my, malt = manned.at(t)
+            mlon, mlat = TO_WGS(mx, my)
+            for idx, (sid, sp) in enumerate(stations.items(), start=1):
+                backhaul, _ = station_mode(idx, t, faults)
+                dist = Point(mx, my).distance(sp)
+                if backhaul == "down" or dist > 120_000:
+                    continue
+                lag = 0.05 if backhaul == "fiber" else 0.15
+                rec = {"stream": "adsb", "time": {"tSource": iso_ms(now), "tStation": iso_ms(now + dt.timedelta(seconds=lag))},
+                       "icao24": "888123", "callsign": "VNA123", "position": {"lat": round(mlat, 7), "lon": round(mlon, 7)},
+                       "altitude": {"value": malt, "reference": "AMSL"}, "groundSpeed": 70.0, "track": manned.track,
+                       "signalDbm": round(-60.0 - 20.0 * math.log10(max(dist, 100.0) / 1000.0), 1)}
+                out.write(json.dumps({"interface": "I-06", "stationId": sid, "payload": rec}, ensure_ascii=False) + "\n")
+                emitted += 1
+        if whole_second and k % int(args.rate * 10) == 0:
+            for idx, sid in enumerate(stations, start=1):
+                if station_mode(idx, t, faults)[0] == "down":
+                    continue
+                rec = {"stream": "weather", "time": {"tStation": iso_ms(now)}, "kind": "measured", "heightAglM": 10,
+                       "windSpeedMs": round(4.0 + idx * 0.3, 1), "windGustMs": round(6.5 + idx * 0.4, 1), "windDirDeg": 200,
+                       "rainMmH": 0.0, "temperatureC": 31.0, "visibilityM": 10000, "cloudBaseM": 900}
+                out.write(json.dumps({"interface": "I-06", "stationId": sid, "payload": rec}, ensure_ascii=False) + "\n")
+                emitted += 1
         if whole_second:
             for idx, sid in enumerate(stations, start=1):
                 backhaul, power = station_mode(idx, t, faults)
@@ -190,10 +238,6 @@ def run(args: argparse.Namespace, out=sys.stdout) -> int:
                                    "spectrum": "down" if power == "ups" else "ok"}}
                 out.write(json.dumps({"interface": "I-06", "stationId": sid, "payload": rec}, ensure_ascii=False) + "\n")
                 emitted += 1
-        if args.realtime:
-            lag = (wall0 + t) - time.monotonic()
-            if lag > 0:
-                time.sleep(lag)
     out.flush()
     print(f"twin: {len(fleet)} phương tiện, {args.duration:.0f} s, {emitted} bản ghi", file=sys.stderr)
     return 0
@@ -212,6 +256,9 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--inject", action="append", default=[],
                    help="kind:start_s:end_s[:value], ví dụ offset:30:60:900, c2_lost:80:90, backhaul_cellular:0:60:2")
     p.add_argument("--realtime", action="store_true")
+    p.add_argument("--flight-id", action="append", default=[], help="mã chuyến do B1 cấp, theo thứ tự phương tiện")
+    p.add_argument("--uas-id", action="append", default=[], help="UAS ID, theo thứ tự phương tiện")
+    p.add_argument("--adsb", action="store_true", help="thêm một tàu bay có người lái phát ADS-B cắt ngang hành lang")
     return p
 
 

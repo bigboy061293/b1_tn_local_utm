@@ -82,7 +82,7 @@ def make_user(app, make_token):
     from b1.identity.models import RoleAssignment, UserAccount
 
     def _make(*roles, mfa: bool = True, expires_at: dt.datetime | None = None, status: str = "active",
-              org_id: uuid.UUID | None = None):
+              org_id: uuid.UUID | None = None, **claims):
         sub = f"u-{uuid.uuid4().hex[:10]}"
         with app.state.sessionmaker() as s:
             u = UserAccount(issuer=ISSUER, subject=sub, display_name=sub, expires_at=expires_at, status=status, org_id=org_id)
@@ -91,7 +91,7 @@ def make_user(app, make_token):
             s.add_all([RoleAssignment(user_id=u.id, role=getattr(r, "value", r)) for r in roles])
             s.commit()
             uid = u.id
-        return uid, {"Authorization": f"Bearer {make_token(sub, mfa=mfa)}"}
+        return uid, {"Authorization": f"Bearer {make_token(sub, mfa=mfa, **claims)}"}
     return _make
 
 
@@ -198,3 +198,64 @@ def put_on_duty(app):
             s.add(DutyShift(user_id=user_id, role=role, starts_at=now - dt.timedelta(minutes=5), ends_at=now + dt.timedelta(hours=hours)))
             s.commit()
     return _put
+
+
+def _centerline():
+    from b1 import geo
+    f = json.loads((pathlib.Path(__file__).resolve().parent.parent / "config/corridor/centerline.geojson").read_text())["features"][0]
+    return f["geometry"]["coordinates"], geo
+
+
+def corridor_point(km: float, offset_m: float = 0.0) -> tuple[float, float]:
+    """Điểm (lon, lat) trên tim tuyến tại Km `km` (đo theo đường thẳng giữa các đỉnh), lệch ngang `offset_m` sang phải."""
+    import math
+    coords, geo = _centerline()
+    d = km * 1000.0
+    for a, b in zip(coords, coords[1:]):
+        seg = geo.distance_m(tuple(a), tuple(b))
+        if d <= seg or b == coords[-1]:
+            f = d / seg
+            lon, lat = a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f
+            kx, ky = geo.scale(lat)
+            dx, dy = (b[0] - a[0]) * kx, (b[1] - a[1]) * ky
+            n = math.hypot(dx, dy)
+            nx, ny = dy / n, -dx / n
+            return lon + nx * offset_m / kx, lat + ny * offset_m / ky
+        d -= seg
+    raise ValueError(km)
+
+
+def make_sample(fid, uas, t: dt.datetime, km: float = 2.0, offset_m: float = 0.0, **over) -> dict:
+    lon, lat = corridor_point(km, offset_m)
+    s = {"flightId": str(fid), "uasId": uas, "timeSource": t.astimezone(dt.timezone.utc).isoformat(timespec="milliseconds")
+         .replace("+00:00", "Z"), "position": {"lat": round(lat, 7), "lon": round(lon, 7)},
+         "altitude": {"value": 120.0, "reference": "AGL"},
+         "velocity": {"groundSpeed": 15.0, "verticalSpeed": 0.0, "track": 318.0},
+         "gnss": {"fixType": "3d", "satellites": 16, "hdop": 0.8}, "energy": {"batteryPercent": 80.0, "voltage": 48.0},
+         "flightMode": {"mode": "AUTO", "autonomy": "automatic"}, "armed": True, "safetyFlags": [], "c2Link": {"state": "ok"}}
+    for k, v in over.items():
+        s[k] = v
+    return s
+
+
+@pytest.fixture(scope="session")
+def flying(app, client, make_user, onboard, live_block):
+    """Chuyến của một khách đã onboard, trong khối 1 đang kích hoạt, đã được cho phép cất cánh.
+
+    Trả dict: fid, uas, tel (headers token khách có phạm vi telemetry:write), o (kết quả onboard).
+    """
+    def _make(start_in_min: int = 5, minutes: int = 60) -> dict:
+        o = onboard()
+        uas = client.get(f"/v1/registry/aircraft/{o['aircraft_id']}", headers=o["customer"]).json()["uas_id"]
+        now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+        st = now + dt.timedelta(minutes=start_in_min)
+        fid = app.state.operations.create_flight(request_ref=f"HL-{now:%Y%m%d}-{uuid.uuid4().int % 10_000:04d}", uas_id=uas,
+                                                 customer_id=uuid.UUID(o["customer_id"]), starts_at=st,
+                                                 ends_at=st + dt.timedelta(minutes=minutes), block_ids=["block-1"], bvlos=True)
+        from b1.identity.roles import Role
+        _, dso = make_user(Role.DUTY_SAFETY_OFFICER)
+        r = client.post(f"/v1/flights/{fid}/takeoff-clearance", headers=dso, json=CLEARANCE_BODY)
+        assert r.status_code == 200, r.text
+        _, tel = make_user(Role.CUSTOMER_OPERATOR, org_id=o["org_id"], scope="telemetry:write")
+        return {"fid": fid, "uas": uas, "tel": tel, "o": o}
+    return _make

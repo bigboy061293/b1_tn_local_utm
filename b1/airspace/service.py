@@ -310,3 +310,15 @@ class AirspaceService:
     @staticmethod
     def _emit(s: Session, kind: str, block_id: str | None, payload: dict) -> None:
         s.add(AirspaceEvent(kind=kind, block_id=block_id, payload=json.loads(json.dumps(payload, default=str))))
+
+    def envelope_all(self) -> list[dict]:
+        """Trần bao của hành lang theo đoạn Km (cho giám sát tuân thủ)."""
+        with self.sm() as s:
+            out = []
+            for c in s.scalars(select(Constraint).where(Constraint.kind == "airspace_constraint")):
+                p = c.properties
+                if "ceiling" in p:
+                    out.append({"id": c.id, "km_start": p.get("km_start", 0.0), "km_end": p.get("km_end", 0.0),
+                                "value": p["ceiling"]["value"], "reference": p["ceiling"]["reference"],
+                                "inclusive": p["ceiling"].get("inclusive", True)})
+            return sorted(out, key=lambda e: e["km_start"])

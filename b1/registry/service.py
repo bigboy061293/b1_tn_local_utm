@@ -112,3 +112,23 @@ class RegistryService:
             if stage == "final" and not has(("insurance",), ("aircraft", "customer")):
                 out.missing.append(Missing("INSURANCE", cu.name))
         return out
+
+    def aircraft(self, aircraft_id: uuid.UUID) -> dict | None:
+        with self.sm() as s:
+            a = s.get(Aircraft, aircraft_id)
+            return None if a is None else {"id": a.id, "customer_id": a.customer_id, "uas_id": a.uas_id,
+                                           "config_ref": a.config_ref, "max_speed_ms": a.max_speed_ms, "mtow_kg": a.mtow_kg}
+
+    def record_conformance(self, aircraft_id: uuid.UUID, test: str, passed: bool, tested_at: dt.datetime, measured: dict,
+                           report_ref: str | None, recorded_by: uuid.UUID | None) -> uuid.UUID:
+        """Ghi kết quả CT chính thức từ phiên kiểm tra do Kỹ thuật viên bay thử mở (hiệu lực 12 tháng)."""
+        if test not in CT_TESTS:
+            raise ValueError(test)
+        with self.sm() as s:
+            a = s.get(Aircraft, aircraft_id)
+            r = ConformanceResult(aircraft_id=aircraft_id, test=test, passed=passed, tested_at=tested_at,
+                                  valid_until=tested_at + dt.timedelta(days=365), measured=measured, report_ref=report_ref,
+                                  config_ref=a.config_ref, recorded_by=recorded_by)
+            s.add(r)
+            s.commit()
+            return r.id

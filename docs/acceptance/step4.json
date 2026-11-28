@@ -1,0 +1,319 @@
+{
+  "run": {
+    "started_at": "2026-11-28T08:26:09.790419+00:00",
+    "finished_at": "2026-11-28T08:57:15.809055+00:00",
+    "base": "http://localhost:8011",
+    "duration_s": 300.0,
+    "ct_duration_s": 1860.0
+  },
+  "flights": {
+    "https": "8b9c1fdf-3793-4564-af54-fc424d2313f0",
+    "mqtt": "248e63c1-9463-44a1-a8d7-992328896a0d",
+    "mavlink": "4c3dce5f-a6ad-414a-bb5e-9a954c6e4028"
+  },
+  "flight_states": {
+    "https": "airborne",
+    "mqtt": "airborne",
+    "mavlink": "airborne"
+  },
+  "stored_samples": {
+    "https": 2961,
+    "mqtt": 601,
+    "mavlink": 601
+  },
+  "feeder": {
+    "i07_sent": 2961,
+    "i07_accepted": 2961,
+    "i07_rejected": 0,
+    "i07_dropped_on_purpose": 40,
+    "i06_sent": 3488,
+    "i06_accepted": 3488
+  },
+  "side_channels": {
+    "mavlink": {
+      "datagrams": 601
+    },
+    "mqtt": {
+      "published": 601
+    }
+  },
+  "faults": [
+    "offset:20:25:600",
+    "offset:25:30:800",
+    "c2_lost:35:37",
+    "climb:40:43:50",
+    "offset:50:55:600",
+    "offset:55:60:800",
+    "c2_lost:65:67",
+    "climb:70:73:50",
+    "offset:80:85:600",
+    "offset:85:90:800",
+    "c2_lost:95:97",
+    "climb:100:103:50",
+    "offset:110:115:600",
+    "offset:115:120:800",
+    "c2_lost:125:127",
+    "climb:130:133:50",
+    "offset:140:145:600",
+    "offset:145:150:800",
+    "c2_lost:155:157",
+    "climb:160:163:50",
+    "offset:170:175:600",
+    "offset:175:180:800",
+    "c2_lost:185:187",
+    "climb:190:193:50",
+    "offset:200:205:600",
+    "offset:205:210:800",
+    "c2_lost:215:217",
+    "climb:220:223:50",
+    "offset:230:235:600",
+    "offset:235:240:800",
+    "c2_lost:245:247",
+    "climb:250:253:50",
+    "low_battery:270:280",
+    "backhaul_cellular:100:140:1"
+  ],
+  "alert_latency": {
+    "from_source": {
+      "n": 46,
+      "p50_ms": 182.5,
+      "p95_ms": 251.5,
+      "max_ms": 261.7
+    },
+    "from_b1_receive": {
+      "n": 53,
+      "p50_ms": 100.4,
+      "p95_ms": 179.9,
+      "max_ms": 199.7
+    },
+    "by_channel": {
+      "mqtt": {
+        "n": 2,
+        "p50_ms": 133.1,
+        "p95_ms": 161.8,
+        "max_ms": 161.8
+      },
+      "https": {
+        "n": 42,
+        "p50_ms": 193.9,
+        "p95_ms": 251.5,
+        "max_ms": 261.7
+      },
+      "mavlink": {
+        "n": 2,
+        "p50_ms": 86.9,
+        "p95_ms": 87.4,
+        "max_ms": 87.4
+      }
+    },
+    "limit_ms": 2000.0,
+    "pass": true
+  },
+  "alerts_by_channel_kind": {
+    "https:C2_LINK": 8,
+    "https:CEILING": 8,
+    "https:LATERAL_DEVIATION": 16,
+    "https:LOW_BATTERY": 1,
+    "https:SAFETY_FLAG": 9,
+    "https:TELEMETRY_STALE": 2,
+    "mavlink:SAFETY_FLAG": 2,
+    "mavlink:TELEMETRY_STALE": 1,
+    "mqtt:SAFETY_FLAG": 2,
+    "mqtt:TELEMETRY_STALE": 1,
+    "other:C2_LINK": 1,
+    "other:SAFETY_FLAG": 2,
+    "station:STATION": 1
+  },
+  "unexpected_alerts": [],
+  "live_stream_hz": 4.68,
+  "ui": {
+    "n": 49,
+    "from_source": {
+      "p50_ms": 197,
+      "p95_ms": 270,
+      "max_ms": 280
+    },
+    "from_b1_receive": {
+      "p50_ms": 140,
+      "p95_ms": 203,
+      "max_ms": 210
+    },
+    "page_errors": [],
+    "screenshot": "/home/user/b1_tn_local_utm/docs/img/ops-live.png"
+  },
+  "telemetry_to_db_ms": {
+    "n": 2961,
+    "p50_ms": 46.0,
+    "p95_ms": 94.0,
+    "max_ms": 480.0
+  },
+  "rid_reconciliation": {
+    "flight_id": "8b9c1fdf-3793-4564-af54-fc424d2313f0",
+    "uas_id": "SIM0001B1TNA32CB2",
+    "total": 323,
+    "matched": 319,
+    "mismatched": 0,
+    "no_telemetry": 4,
+    "match_ratio": 1.0,
+    "max_distance_m": 2.5,
+    "by_station": {
+      "RIS-1": 187,
+      "RIS-2": 136
+    },
+    "threshold_m": 100.0
+  },
+  "timeline_counts": {
+    "measured": 2961,
+    "interpolated": 0,
+    "gap": 40
+  },
+  "adsb_track": {
+    "key": "888123",
+    "kind": "adsb",
+    "callsign": "VNA123",
+    "lat": 11.1551161,
+    "lon": 106.2962578,
+    "alt": 1500.0,
+    "alt_ref": "AMSL",
+    "ground_speed": 70.0,
+    "track": 71.6,
+    "t_source": "2026-11-28T08:31:22.342Z",
+    "signal_dbm": -79.5,
+    "stations": [
+      "RIS-1",
+      "RIS-2",
+      "RIS-3",
+      "RIS-4",
+      "RIS-5"
+    ],
+    "age_s": 3.7,
+    "status": "ok",
+    "reports": 300,
+    "uncertainty_m": 0,
+    "flight_id": null
+  },
+  "station_levels_end": {
+    "RIS-1": "L0",
+    "RIS-2": "L0",
+    "RIS-3": "L0",
+    "RIS-4": "L0",
+    "RIS-5": "L0"
+  },
+  "ct_session": {
+    "id": "295175ec-4182-4551-951e-6438a064e407",
+    "client": {
+      "sent": 18001,
+      "accepted": 18001,
+      "rejected": 0,
+      "errors": 0,
+      "backfilled": 600,
+      "load_batches": 1358,
+      "load_throttled": 1056
+    },
+    "results": {
+      "CT-1": {
+        "test": "CT-1",
+        "passed": true,
+        "measured": {
+          "accepted": 18601,
+          "rejected": 0,
+          "duration_s": 1860.0,
+          "min_duration_s": 1800.0
+        }
+      },
+      "CT-2": {
+        "test": "CT-2",
+        "passed": true,
+        "measured": {
+          "samples": 18601,
+          "duration_s": 1800.0,
+          "rate_hz": 10.0,
+          "pct_gaps_le_300ms": 100.0,
+          "max_gap_s": 0.1,
+          "min_duration_s": 1800.0,
+          "excluded_disconnect": true
+        }
+      },
+      "CT-3": {
+        "test": "CT-3",
+        "passed": true,
+        "measured": {
+          "monotonic": true,
+          "median_offset_ms": 7.0,
+          "p95_offset_ms": 14.6
+        }
+      },
+      "CT-4": {
+        "test": "CT-4",
+        "passed": true,
+        "measured": {
+          "window_s": 1860.0,
+          "samples": 18601,
+          "pct_within_5m": 100.0,
+          "p95_distance_m": 2.86
+        }
+      },
+      "CT-5": {
+        "test": "CT-5",
+        "passed": true,
+        "measured": {
+          "onsets": [
+            {
+              "flag": "c2_lost",
+              "latency_s": 0.014
+            },
+            {
+              "flag": "geofence_breach",
+              "latency_s": 0.016
+            }
+          ]
+        }
+      },
+      "CT-6": {
+        "test": "CT-6",
+        "passed": true,
+        "measured": {
+          "tls_version": "TLSv1.3",
+          "client_cert_verified": "SUCCESS",
+          "client_cert_subject": "O=Khach AT4,CN=kh-at4"
+        }
+      },
+      "CT-7": {
+        "test": "CT-7",
+        "passed": true,
+        "measured": {
+          "samples": 3001,
+          "duration_s": 300.0,
+          "rate_hz": 10.0,
+          "pct_gaps_le_300ms": 100.0,
+          "max_gap_s": 0.1,
+          "arrival": {
+            "samples": 3001,
+            "duration_s": 299.9,
+            "rate_hz": 10.0,
+            "pct_gaps_le_300ms": 99.7,
+            "max_gap_s": 0.475
+          },
+          "p95_receive_lag_ms": 104.4
+        }
+      },
+      "CT-8": {
+        "test": "CT-8",
+        "passed": true,
+        "measured": {
+          "disconnect_s": 60.0,
+          "reconnect_s": 0.03,
+          "backfilled": 600,
+          "max_gap_after_backfill_s": 0.1
+        }
+      }
+    },
+    "recorded": 8,
+    "transport": {
+      "tls_version": "TLSv1.3",
+      "client_cert_verified": "SUCCESS",
+      "client_cert_subject": "O=Khach AT4,CN=kh-at4"
+    }
+  },
+  "audit_chain": "{\"ok\": true, \"records\": 49, \"head\": \"9e70f432c90ed9497f3a04f662cd246cb716cef4fb4c837d6b6940aa2cb6b330\"}"
+}
