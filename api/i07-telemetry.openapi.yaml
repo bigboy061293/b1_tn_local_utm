@@ -69,7 +69,7 @@ paths:
         '400': { $ref: '#/components/responses/Problem' }
         '429':
           description: >-
-            Vượt hạn mức gửi bù của chuyến (mặc định 1000 mẫu/giây, xô 2000 mẫu). Chờ theo Retry-After rồi gửi lại lô đó.
+            Vượt hạn mức gửi bù của chuyến (mặc định 200 mẫu/giây, xô 600 mẫu: một phút mất kết nối ở 10 Hz gửi bù được ngay). Chờ theo Retry-After rồi gửi lại lô đó.
             Mẫu thời gian thực (/samples) không chịu hạn mức này.
           headers:
             Retry-After:
