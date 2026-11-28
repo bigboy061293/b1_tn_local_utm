@@ -50,6 +50,14 @@ def stations(request: Request, p: Principal = Depends(require(Perm.AIRSPACE_READ
     return {"items": svc(request).stations()}
 
 
+@ops_router.get("/centerline")
+def centerline(request: Request, p: Principal = Depends(require(Perm.AIRSPACE_READ))) -> dict:
+    """Tim tuyến dùng cho giám sát lệch tuyến, kèm ngưỡng vùng bình thường và vùng dự phòng (D6)."""
+    st = request.app.state.settings
+    return {"type": "Feature", "geometry": {"type": "LineString", "coordinates": request.app.state.monitor.centerline.pts},
+            "properties": {"normal_half_width_m": st.normal_half_width_m, "contingency_half_width_m": st.contingency_half_width_m}}
+
+
 @ops_router.get("/flights/{flight_id}/rid-reconciliation")
 def reconciliation(flight_id: uuid.UUID, request: Request, p: Principal = Depends(require(Perm.FLIGHT_READ_ALL))) -> dict:
     """Tỷ lệ đối chiếu Broadcast Remote ID với telemetry của chuyến (AT-05)."""

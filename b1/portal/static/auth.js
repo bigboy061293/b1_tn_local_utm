@@ -30,6 +30,7 @@ export async function init() {
     sessionStorage.removeItem(KEY + ".pkce");
     if (q.get("state") !== st.state) throw new Error("state không khớp, thử đăng nhập lại");
     await tokenRequest({ grant_type: "authorization_code", code: q.get("code"), redirect_uri: redirectUri(), code_verifier: st.verifier });
+    if (st.path && st.path !== location.pathname) { location.replace(`${st.path}${st.hash || ""}`); return new Promise(() => {}); }
     history.replaceState(null, "", `${BASE}${st.hash || ""}`);
   }
   return !!session;
@@ -38,7 +39,7 @@ export async function init() {
 export async function login() {
   const verifier = rand(48), state = rand(16);
   const challenge = b64url(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)));
-  sessionStorage.setItem(KEY + ".pkce", JSON.stringify({ verifier, state, hash: location.hash }));
+  sessionStorage.setItem(KEY + ".pkce", JSON.stringify({ verifier, state, hash: location.hash, path: location.pathname }));
   const u = new URL(meta.authorization_endpoint);
   Object.entries({ response_type: "code", client_id: cfg.client_id, redirect_uri: redirectUri(), scope: "openid profile",
                    state, code_challenge: challenge, code_challenge_method: "S256", ui_locales: "vi" })

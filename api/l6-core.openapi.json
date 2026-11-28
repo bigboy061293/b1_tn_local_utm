@@ -1138,6 +1138,50 @@
       }
      }
     }
+   },
+   "get": {
+    "tags": [
+     "Đăng ký và hồ sơ"
+    ],
+    "summary": "List Conformance",
+    "description": "Kết quả CT-1…8 đã ghi của phương tiện, mới nhất trước.",
+    "operationId": "list_conformance_v1_registry_aircraft__aircraft_id__conformance_get",
+    "parameters": [
+     {
+      "name": "aircraft_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Aircraft Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Conformance V1 Registry Aircraft  Aircraft Id  Conformance Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
    }
   },
   "/v1/registry/eligibility": {
@@ -2914,6 +2958,1049 @@
     }
    }
   },
+  "/telemetry/v1/flights/{flight_id}/samples": {
+   "post": {
+    "tags": [
+     "I-07 Telemetry"
+    ],
+    "summary": "Post Samples",
+    "description": "Một lô mẫu (≤1 giây dữ liệu). Mẫu sai lược đồ bị loại và liệt kê trong `rejected`, mẫu đúng vẫn được nhận.",
+    "operationId": "post_samples_telemetry_v1_flights__flight_id__samples_post",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/telemetry/v1/flights/{flight_id}/backfill": {
+   "post": {
+    "tags": [
+     "I-07 Telemetry"
+    ],
+    "summary": "Post Backfill",
+    "description": "Gửi bù sau mất kết nối, giữ nhãn thời gian gốc (CT-8). Mẫu đã có (cùng chuyến, UAS ID, timeSource) bị bỏ qua.",
+    "operationId": "post_backfill_telemetry_v1_flights__flight_id__backfill_post",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/telemetry/v1/flights/{flight_id}/rejected": {
+   "get": {
+    "tags": [
+     "I-07 Telemetry"
+    ],
+    "summary": "Rejected",
+    "description": "Mẫu bị loại và lý do, để khách sửa bộ phát.",
+    "operationId": "rejected_telemetry_v1_flights__flight_id__rejected_get",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Rejected Telemetry V1 Flights  Flight Id  Rejected Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/telemetry/v1/flights/{flight_id}/mavlink": {
+   "post": {
+    "tags": [
+     "I-07 Telemetry"
+    ],
+    "summary": "Bind Mavlink",
+    "description": "Gán sysid MAVLink vào chuyến để cổng UDP biết bản tin thuộc chuyến nào.",
+    "operationId": "bind_mavlink_telemetry_v1_flights__flight_id__mavlink_post",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BindingIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Bind Mavlink Telemetry V1 Flights  Flight Id  Mavlink Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/flights/{flight_id}/telemetry": {
+   "get": {
+    "tags": [
+     "Telemetry (vận hành)"
+    ],
+    "summary": "Get Telemetry",
+    "description": "Mẫu đã lưu, kèm ba nhãn thời gian: tại nguồn, B1 nhận, ghi vào CSDL.",
+    "operationId": "get_telemetry_v1_flights__flight_id__telemetry_get",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     },
+     {
+      "name": "start",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Start"
+      }
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "End"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 200000,
+       "default": 20000,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Telemetry V1 Flights  Flight Id  Telemetry Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/flights/{flight_id}/timeline": {
+   "get": {
+    "tags": [
+     "Telemetry (vận hành)"
+    ],
+    "summary": "Get Timeline",
+    "description": "Trục thời gian chung (mặc định 10 Hz) với nhãn `measured` / `interpolated` / `gap` cho từng mốc.",
+    "operationId": "get_timeline_v1_flights__flight_id__timeline_get",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     },
+     {
+      "name": "start",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Start"
+      }
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "End"
+      }
+     },
+     {
+      "name": "hz",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "number",
+       "maximum": 20,
+       "minimum": 1,
+       "default": 10.0,
+       "title": "Hz"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Timeline V1 Flights  Flight Id  Timeline Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/ct-sessions": {
+   "post": {
+    "tags": [
+     "Kiểm tra tuân thủ CT-1…8"
+    ],
+    "summary": "Start",
+    "operationId": "start_v1_ct_sessions_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SessionIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Start V1 Ct Sessions Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/ct-sessions/{session_id}": {
+   "get": {
+    "tags": [
+     "Kiểm tra tuân thủ CT-1…8"
+    ],
+    "summary": "Get",
+    "operationId": "get_v1_ct_sessions__session_id__get",
+    "parameters": [
+     {
+      "name": "session_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Session Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get V1 Ct Sessions  Session Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/ct-sessions/{session_id}/marks": {
+   "post": {
+    "tags": [
+     "Kiểm tra tuân thủ CT-1…8"
+    ],
+    "summary": "Mark",
+    "description": "Đánh dấu đoạn thử: đứng yên tại điểm RTK (CT-4), chạy tải (CT-7), ngắt kết nối (CT-8).",
+    "operationId": "mark_v1_ct_sessions__session_id__marks_post",
+    "parameters": [
+     {
+      "name": "session_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Session Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MarkIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Mark V1 Ct Sessions  Session Id  Marks Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/ct-sessions/{session_id}/evaluate": {
+   "post": {
+    "tags": [
+     "Kiểm tra tuân thủ CT-1…8"
+    ],
+    "summary": "Evaluate",
+    "operationId": "evaluate_v1_ct_sessions__session_id__evaluate_post",
+    "parameters": [
+     {
+      "name": "session_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Session Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Evaluate V1 Ct Sessions  Session Id  Evaluate Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/ris/v1/stations/{station_id}/records": {
+   "post": {
+    "tags": [
+     "I-06 Trạm RIS"
+    ],
+    "summary": "Post Records",
+    "operationId": "post_records_ris_v1_stations__station_id__records_post",
+    "parameters": [
+     {
+      "name": "station_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "RIS-1",
+        "RIS-2",
+        "RIS-3",
+        "RIS-4",
+        "RIS-5"
+       ],
+       "type": "string",
+       "title": "Station Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/surveillance/tracks": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Tracks",
+    "description": "Vết ADS-B đã gộp và vết Broadcast Remote ID. `status: degraded` khi quá 15 giây, kèm vòng bất định.",
+    "operationId": "tracks_v1_surveillance_tracks_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Tracks V1 Surveillance Tracks Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/surveillance/stations": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Stations",
+    "description": "Trạng thái 5 trạm và mức suy giảm (L0, L1 4G/5G, L2 mất trạm, L4 bộ lưu điện), thời tiết đo gần nhất.",
+    "operationId": "stations_v1_surveillance_stations_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Stations V1 Surveillance Stations Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/surveillance/centerline": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Centerline",
+    "description": "Tim tuyến dùng cho giám sát lệch tuyến, kèm ngưỡng vùng bình thường và vùng dự phòng (D6).",
+    "operationId": "centerline_v1_surveillance_centerline_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Centerline V1 Surveillance Centerline Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/surveillance/flights/{flight_id}/rid-reconciliation": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Reconciliation",
+    "description": "Tỷ lệ đối chiếu Broadcast Remote ID với telemetry của chuyến (AT-05).",
+    "operationId": "reconciliation_v1_surveillance_flights__flight_id__rid_reconciliation_get",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Reconciliation V1 Surveillance Flights  Flight Id  Rid Reconciliation Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/alerts": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "List Alerts",
+    "operationId": "list_alerts_v1_alerts_get",
+    "parameters": [
+     {
+      "name": "open",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Open"
+      }
+     },
+     {
+      "name": "flight_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Flight Id"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Kind"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 2000,
+       "default": 200,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Alerts V1 Alerts Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/alerts/{alert_id}/acknowledge": {
+   "post": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Acknowledge",
+    "description": "Người vận hành xác nhận đã thấy (và có thể đóng) cảnh báo; ghi nhật ký.",
+    "operationId": "acknowledge_v1_alerts__alert_id__acknowledge_post",
+    "parameters": [
+     {
+      "name": "alert_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Alert Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AckIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Acknowledge V1 Alerts  Alert Id  Acknowledge Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/alerts/events": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Alert Events",
+    "operationId": "alert_events_v1_alerts_events_get",
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 0,
+       "title": "After"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 2000,
+       "default": 500,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Alert Events V1 Alerts Events Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/live": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Live",
+    "operationId": "live_v1_live_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Live V1 Live Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/live/stream": {
+   "get": {
+    "tags": [
+     "Giám sát"
+    ],
+    "summary": "Live Stream",
+    "description": "Luồng SSE cho bản đồ trực tiếp: sự kiện cảnh báo ngay khi có (`alert`), ảnh chụp vị trí `hz` lần mỗi giây (`live`).",
+    "operationId": "live_stream_v1_live_stream_get",
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "After"
+      }
+     },
+     {
+      "name": "hz",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "number",
+       "maximum": 10,
+       "minimum": 0.5,
+       "default": 5.0,
+       "title": "Hz"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/disclaimers": {
    "get": {
     "tags": [
@@ -2964,6 +4051,29 @@
  },
  "components": {
   "schemas": {
+   "AckIn": {
+    "properties": {
+     "resolve": {
+      "type": "boolean",
+      "title": "Resolve",
+      "default": false
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "title": "AckIn"
+   },
    "ActivationIn": {
     "properties": {
      "block_id": {
@@ -3237,6 +4347,35 @@
      "requestedSlots"
     ],
     "title": "ApplicationIn"
+   },
+   "BindingIn": {
+    "properties": {
+     "sysid": {
+      "type": "integer",
+      "maximum": 255.0,
+      "minimum": 1.0,
+      "title": "Sysid",
+      "description": "MAVLink system id của phương tiện"
+     },
+     "signing_key_hex": {
+      "anyOf": [
+       {
+        "type": "string",
+        "pattern": "^[0-9a-fA-F]{64}$"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Signing Key Hex",
+      "description": "Khoá ký MAVLink v2 (32 byte). Có khoá thì B1 bỏ bản tin không ký hoặc sai chữ ký"
+     }
+    },
+    "type": "object",
+    "required": [
+     "sysid"
+    ],
+    "title": "BindingIn"
    },
    "CheckItem": {
     "properties": {
@@ -3686,6 +4825,40 @@
     ],
     "title": "ItemBody"
    },
+   "MarkIn": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "static_start",
+       "static_end",
+       "load_start",
+       "load_end",
+       "disconnect_start",
+       "disconnect_end"
+      ],
+      "title": "Kind"
+     },
+     "at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "At",
+      "description": "Mặc định là giờ B1 nhận yêu cầu"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind"
+    ],
+    "title": "MarkIn"
+   },
    "OrgIn": {
     "properties": {
      "name": {
@@ -3849,7 +5022,8 @@
      "regulator",
      "low_altitude_coordination",
      "auditor",
-     "province_portal"
+     "province_portal",
+     "ris_station"
     ],
     "title": "Role"
    },
@@ -3876,6 +5050,101 @@
      "role"
     ],
     "title": "RoleIn"
+   },
+   "RtkRef": {
+    "properties": {
+     "lat": {
+      "type": "number",
+      "maximum": 90.0,
+      "minimum": -90.0,
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "maximum": 180.0,
+      "minimum": -180.0,
+      "title": "Lon"
+     }
+    },
+    "type": "object",
+    "required": [
+     "lat",
+     "lon"
+    ],
+    "title": "RtkRef"
+   },
+   "SessionIn": {
+    "properties": {
+     "aircraft_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Aircraft Id"
+     },
+     "tests": {
+      "items": {
+       "type": "string",
+       "enum": [
+        "CT-1",
+        "CT-2",
+        "CT-3",
+        "CT-4",
+        "CT-5",
+        "CT-6",
+        "CT-7",
+        "CT-8"
+       ]
+      },
+      "type": "array",
+      "title": "Tests",
+      "default": [
+       "CT-1",
+       "CT-2",
+       "CT-3",
+       "CT-4",
+       "CT-5",
+       "CT-6",
+       "CT-7",
+       "CT-8"
+      ]
+     },
+     "official": {
+      "type": "boolean",
+      "title": "Official",
+      "description": "Chỉ Kỹ thuật viên bay thử: kết quả ghi vào hồ sơ phương tiện",
+      "default": false
+     },
+     "rtk_ref": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RtkRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Điểm chuẩn RTK cho CT-4"
+     },
+     "min_duration_s": {
+      "type": "integer",
+      "maximum": 7200.0,
+      "minimum": 60.0,
+      "title": "Min Duration S",
+      "description": "CT-1, CT-2 cần 30 phút; phiên tự kiểm có thể ngắn hơn",
+      "default": 1800
+     },
+     "disconnect_s": {
+      "type": "integer",
+      "maximum": 600.0,
+      "minimum": 10.0,
+      "title": "Disconnect S",
+      "default": 60
+     }
+    },
+    "type": "object",
+    "required": [
+     "aircraft_id"
+    ],
+    "title": "SessionIn"
    },
    "ShiftIn": {
     "properties": {

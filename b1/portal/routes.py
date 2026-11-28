@@ -31,6 +31,12 @@ def ops_index() -> FileResponse:
     return FileResponse(STATIC / "ops.html", headers={"Cache-Control": "no-store"})
 
 
+@router.get("/ops/live")
+def ops_live() -> FileResponse:
+    """Bản đồ trực tiếp (F-05, F-06): chuyến đang bay, vết ADS-B và Remote ID, trạng thái trạm, cảnh báo."""
+    return FileResponse(STATIC / "live.html", headers={"Cache-Control": "no-store"})
+
+
 @router.get("/portal/config.json")
 def portal_config(request: Request) -> dict:
     s = request.app.state.settings

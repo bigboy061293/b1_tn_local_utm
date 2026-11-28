@@ -97,6 +97,8 @@ class SurveillanceService:
         self.station_status: dict[str, dict] = {}
         self._rid_match_streak: dict[uuid.UUID, int] = {}
         self._corridor: list[dict] | None = None
+        self._flights_cache: tuple[float, dict] | None = None
+        self._pending: list[tuple] = []  # bản tin Remote ID chờ telemetry cùng thời điểm tới
 
     # ---------- nhận ----------
 
@@ -198,12 +200,24 @@ class SurveillanceService:
                 self._corridor = [b.geometry for b in self.airspace.blocks(s)]
         return self._corridor
 
+    def _known_flight(self, uas: str) -> uuid.UUID | None:
+        """Chuyến đã được cho phép cất cánh hoặc đang bay của UAS ID, kể cả khi chưa có mẫu telemetry nào."""
+        fid = self.monitor.flight_of_uas(uas)
+        if fid is not None:
+            return fid
+        now = time.monotonic()
+        c = self._flights_cache
+        if c is None or c[0] < now or (uas not in c[1] and c[0] - 2.0 + 0.5 < now):  # UAS ID mới: đọc lại, tối đa 2 lần/giây
+            rows = self.monitor.operations.in_states(("cleared", "airborne"))
+            self._flights_cache = c = (now + 2.0, {f["uas_id"]: f["id"] for f in rows if f["uas_id"]})
+        return c[1].get(uas)
+
     def _rid(self, sid: str, r: dict, t_receive: dt.datetime) -> list[dict]:
         uas = r["uasId"]
         tr = self._fuse(self.rid, "rid", uas, sid, r)
-        fid = self.monitor.flight_of_uas(uas)
+        fid = self._known_flight(uas)
         t_src = _ts(r["time"].get("tSource")) or _ts(r["time"]["tStation"])
-        out: list[dict] = []
+        out: list[dict] = self._drain_pending()
         if fid is None:
             p = (r["position"]["lon"], r["position"]["lat"])
             if any(geo.in_polygon(p, g) for g in self.corridor()):
@@ -213,7 +227,25 @@ class SurveillanceService:
             return out
         if tr is not None:
             tr.flight_id = str(fid)
+        return out + self._reconcile(fid, uas, sid, r, t_src, t_receive, time.monotonic() + 2.0)
+
+    def _drain_pending(self, force: bool = False) -> list[dict]:
+        out: list[dict] = []
+        with self.lock:
+            pending, self._pending = self._pending, []
+        for item in pending:
+            out += self._reconcile(*item[:6], deadline=item[6], expired=force or time.monotonic() > item[6])
+        return out
+
+    def _reconcile(self, fid, uas, sid, r, t_src, t_receive, deadline, expired: bool = False) -> list[dict]:
         tel = self.monitor.telemetry_at(fid, t_src.timestamp(), self.s.rid_match_max_dt_s)
+        if tel == "pending":
+            if not expired:
+                with self.lock:
+                    self._pending.append((fid, uas, sid, r, t_src, t_receive, deadline))
+                return []
+            tel = None
+        out: list[dict] = []
         dist = None if tel is None else geo.distance_m((tel[1], tel[2]), (r["position"]["lon"], r["position"]["lat"]))
         matched = dist is not None and dist <= self.s.rid_mismatch_m
         self._count(fid, uas, sid, dist, matched)
@@ -251,8 +283,8 @@ class SurveillanceService:
     # ---------- kiểm định kỳ (gọi từ MonitorService.tick) ----------
 
     def health_tick(self, monitor) -> list[dict]:
+        out = self._drain_pending()
         now = time.monotonic()
-        out = []
         with self.lock:
             for table in (self.adsb, self.rid):
                 for k, tr in list(table.items()):
@@ -309,7 +341,8 @@ class SurveillanceService:
                 level = "L1"
             else:
                 level = "L0"
-            out.append({"station_id": sid, "level": level, "status": st or None,
+            lon, lat = self.monitor.stations.get(sid, (None, None))
+            out.append({"station_id": sid, "lon": lon, "lat": lat, "level": level, "status": st or None,
                         "status_t_station": _iso(x.status_t_station) if x else None,
                         "last_seen_s": None if seen is None else round(now - seen, 1),
                         "weather": x.weather if x else None, "weather_t_station": _iso(x.weather_t_station) if x else None})

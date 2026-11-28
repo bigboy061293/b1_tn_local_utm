@@ -114,7 +114,7 @@ def test_rid_reconciliation_ratio_and_mismatch_alert(client, app, flying, make_u
     assert rec["by_station"] == {"RIS-1": 2, "RIS-2": 1}
     # ba lần khớp liên tiếp thì tự giải toả
     for i in range(3):
-        post(client, h1, "RIS-1", [rid(t + dt.timedelta(milliseconds=60 + i), f["uas"], lon, lat)])
+        post(client, h1, "RIS-1", [rid(t + dt.timedelta(milliseconds=i), f["uas"], lon, lat)])
     assert app.state.monitor.alerts(flight_id=f["fid"], kind="RID_MISMATCH")[0]["state"] == "resolved"
 
 
@@ -161,3 +161,28 @@ def test_station_degradation_levels(client, app, make_user):
     post(client, h, "RIS-3", [status(now())])
     m.tick()
     assert not [x for x in m.alerts(kind="STATION", open_only=True) if x["subject"] == "RIS-3"]
+
+
+def test_rid_arriving_before_telemetry_waits_for_it(client, app, flying, make_user):
+    """Bản tin Remote ID tới trước mẫu telemetry cùng thời điểm: chờ mẫu đó rồi mới đối chiếu, không báo lệch sai."""
+    f = flying()
+    t = _fly(client, f, km=3.0)
+    t_next = t + dt.timedelta(milliseconds=500)
+    lon, lat = corridor_point(3.0, 600)  # phương tiện vừa lệch 600 m; Remote ID tới trước telemetry
+    post(client, station(make_user, "RIS-1"), "RIS-1", [rid(t_next, f["uas"], lon, lat)])
+    assert app.state.monitor.alerts(flight_id=f["fid"], kind="RID_MISMATCH") == []
+    client.post(f"/telemetry/v1/flights/{f['fid']}/samples", headers=f["tel"],
+                json={"samples": [make_sample(f["fid"], f["uas"], t_next, km=3.0, offset_m=600)]})
+    app.state.monitor.tick()
+    rec = app.state.surveillance.reconciliation(f["fid"])
+    assert (rec["matched"], rec["mismatched"]) == (1, 0)
+    assert app.state.monitor.alerts(flight_id=f["fid"], kind="RID_MISMATCH") == []
+
+
+def test_rid_of_cleared_flight_without_telemetry_is_not_unknown(client, app, flying, make_user):
+    f = flying()
+    lon, lat = corridor_point(3.0)
+    post(client, station(make_user, "RIS-1"), "RIS-1", [rid(now(), f["uas"], lon, lat)])
+    assert not [x for x in app.state.monitor.alerts(kind="RID_UNKNOWN") if x["subject"] == f["uas"]]
+    app.state.surveillance._drain_pending(force=True)
+    assert app.state.surveillance.reconciliation(f["fid"])["no_telemetry"] == 1

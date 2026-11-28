@@ -335,6 +335,17 @@ def record_conformance(aircraft_id: uuid.UUID, body: ConformanceIn, request: Req
     return dump(r)
 
 
+@router.get("/aircraft/{aircraft_id}/conformance")
+def list_conformance(aircraft_id: uuid.UUID, request: Request, p: Principal = Depends(require(*OWN_OR_ALL)),
+                     s: Session = Depends(get_session)) -> dict:
+    """Kết quả CT-1…8 đã ghi của phương tiện, mới nhất trước."""
+    o = _get(s, Aircraft, aircraft_id)
+    check_own(request, p, o.customer_id)
+    rows = s.scalars(select(ConformanceResult).where(ConformanceResult.aircraft_id == o.id)
+                     .order_by(ConformanceResult.tested_at.desc(), ConformanceResult.test)).all()
+    return {"items": [dump(r) for r in rows]}
+
+
 @router.get("/eligibility")
 def eligibility(aircraft_id: uuid.UUID, pilot_id: uuid.UUID, start: dt.datetime, end: dt.datetime, request: Request,
                 bvlos: bool = True, stage: Literal["request", "final"] = "request",

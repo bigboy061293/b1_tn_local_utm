@@ -175,6 +175,10 @@ def run(args: argparse.Namespace, out=sys.stdout) -> int:
     for k in range(steps + 1):
         t = k * dt_s
         now = t0 + dt.timedelta(seconds=t)
+        if args.realtime:  # chờ tới đúng giờ của mẫu rồi mới phát, để giờ nguồn không đi trước đồng hồ thật
+            lag = (wall0 + t) - time.monotonic()
+            if lag > 0:
+                time.sleep(lag)
         whole_second = k % int(args.rate) == 0
         for ac in fleet:
             s = ac.state(t, faults)
@@ -234,10 +238,6 @@ def run(args: argparse.Namespace, out=sys.stdout) -> int:
                                    "spectrum": "down" if power == "ups" else "ok"}}
                 out.write(json.dumps({"interface": "I-06", "stationId": sid, "payload": rec}, ensure_ascii=False) + "\n")
                 emitted += 1
-        if args.realtime:
-            lag = (wall0 + t) - time.monotonic()
-            if lag > 0:
-                time.sleep(lag)
     out.flush()
     print(f"twin: {len(fleet)} phương tiện, {args.duration:.0f} s, {emitted} bản ghi", file=sys.stderr)
     return 0

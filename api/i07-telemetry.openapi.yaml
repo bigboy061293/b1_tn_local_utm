@@ -67,6 +67,51 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/BatchAck' }
         '400': { $ref: '#/components/responses/Problem' }
+  /v1/flights/{flightId}/rejected:
+    get:
+      operationId: getRejectedSamples
+      summary: Mẫu bị loại gần nhất và lý do (để khách sửa bộ phát)
+      parameters:
+        - $ref: '#/components/parameters/FlightId'
+      responses:
+        '200':
+          description: Danh sách.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        t_receive: { type: string, format: date-time }
+                        channel: { type: string, enum: [https, mqtt, mavlink] }
+                        reason: { type: string }
+  /v1/flights/{flightId}/mavlink:
+    post:
+      operationId: bindMavlink
+      summary: Gán sysid MAVLink v2 của phương tiện vào chuyến (kênh UDP), kèm khoá ký nếu dùng
+      description: |
+        Có khoá ký (32 byte, hex) thì B1 bỏ mọi bản tin không ký, sai chữ ký hoặc có nhãn thời gian ký không tăng.
+        B1 đọc HEARTBEAT, SYS_STATUS, SYSTEM_TIME, GPS_RAW_INT, BATTERY_STATUS; mỗi GLOBAL_POSITION_INT sinh một mẫu.
+        Giờ nguồn = time_boot_ms + độ lệch lấy từ SYSTEM_TIME; thiếu SYSTEM_TIME thì CT-3 không đạt.
+      parameters:
+        - $ref: '#/components/parameters/FlightId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sysid]
+              properties:
+                sysid: { type: integer, minimum: 1, maximum: 255 }
+                signing_key_hex: { type: string, pattern: '^[0-9a-fA-F]{64}$' }
+      responses:
+        '201': { description: Đã gán. }
+        '403': { $ref: '#/components/responses/Problem' }
 components:
   securitySchemes:
     oauth2:
@@ -191,6 +236,7 @@ components:
       required: [accepted, rejected, serverReceivedAt]
       properties:
         accepted: { type: integer, minimum: 0 }
+        duplicates: { type: integer, minimum: 0, description: 'Mẫu đã có (cùng flightId, uasId, timeSource), bỏ qua không lỗi' }
         rejected:
           type: array
           items:

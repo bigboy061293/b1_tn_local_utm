@@ -134,7 +134,7 @@ class TelemetryService:
             if not live:
                 return alerts
             self._last_live[t.id] = live[-1]["t_source"]
-        flight = {"id": t.id, "block_ids": t.block_ids, "request_ref": t.request_ref, "state": t.state, "ct_session": t.ct_session}
+        flight = {"id": t.id, "block_ids": t.block_ids, "request_ref": t.request_ref, "state": "ct" if t.ct_session else t.state, "ct_session": t.ct_session}
         for r in live:
             alerts += self.monitor.on_sample(flight, r)
         return alerts

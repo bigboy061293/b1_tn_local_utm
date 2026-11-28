@@ -134,12 +134,15 @@ class MonitorService:
                     return fid
         return None
 
-    def telemetry_at(self, flight_id: uuid.UUID, t: float, max_dt: float = 1.0) -> tuple | None:
-        """Mẫu telemetry gần thời điểm t nhất (±max_dt giây): (t, lon, lat, alt_amsl)."""
+    def telemetry_at(self, flight_id: uuid.UUID, t: float, max_dt: float = 1.0) -> tuple | None | str:
+        """Mẫu telemetry gần thời điểm t nhất (±max_dt giây): (t, lon, lat, alt_amsl). Trả "pending" khi telemetry chưa tới
+        thời điểm t (bản tin Remote ID đến trước mẫu telemetry cùng lúc): người gọi đối chiếu lại sau."""
         with self.lock:
             h = self.history.get(flight_id)
             if not h:
                 return None
+            if h[-1][0] < t - 0.05:
+                return "pending"
             best = min(h, key=lambda x: abs(x[0] - t))
         return best if abs(best[0] - t) <= max_dt else None
 
