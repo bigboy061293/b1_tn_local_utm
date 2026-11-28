@@ -1,10 +1,12 @@
 // Đăng nhập OIDC Authorization Code + PKCE (RFC 7636) với client công khai, không cần thư viện ngoài.
-const KEY = "b1.portal.session";
+// Dùng chung cho cổng khách hàng (/portal/) và trang vận hành (/ops/): mỗi trang một phiên riêng.
+const BASE = location.pathname.startsWith("/ops") ? "/ops/" : "/portal/";
+const KEY = `b1.${BASE.replace(/\//g, "")}.session`;
 let cfg, meta, session = JSON.parse(sessionStorage.getItem(KEY) || "null");
 
 const b64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const rand = (n = 32) => b64url(crypto.getRandomValues(new Uint8Array(n)));
-const redirectUri = () => `${location.origin}/portal/`;
+const redirectUri = () => `${location.origin}${BASE}`;
 
 function save(tok) {
   session = { access: tok.access_token, refresh: tok.refresh_token, id: tok.id_token || session?.id,
@@ -28,7 +30,7 @@ export async function init() {
     sessionStorage.removeItem(KEY + ".pkce");
     if (q.get("state") !== st.state) throw new Error("state không khớp, thử đăng nhập lại");
     await tokenRequest({ grant_type: "authorization_code", code: q.get("code"), redirect_uri: redirectUri(), code_verifier: st.verifier });
-    history.replaceState(null, "", `/portal/${st.hash || ""}`);
+    history.replaceState(null, "", `${BASE}${st.hash || ""}`);
   }
   return !!session;
 }

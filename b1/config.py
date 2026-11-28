@@ -28,3 +28,14 @@ class Settings(BaseSettings):
     # Mô-đun kết nối I-02 (đăng ký phương tiện của Bộ Công an): mock | manual.
     i02_connector: str = "mock"
     i02_mock_file: str | None = None
+
+    # Dữ liệu hành lang (GeoJSON sinh bởi tools/gen_corridor.py) nạp vào dịch vụ vùng trời khi khởi động.
+    corridor_dir: str = "config/corridor"
+    # Khoá ký của B1 (ES256, PEM) cho bản ghi cho phép cất cánh và webhook. Chưa có thì tạo mới (chỉ dùng khi phát triển).
+    signing_key_file: str = ".dev/b1_signing_key.pem"
+    # Ký điện tử khi cho phép cất cánh: người ký phải đăng nhập lại trong khoảng này (claim auth_time).
+    signature_max_auth_age_s: int = 600
+    # Chu kỳ luồng sự kiện vùng trời đọc CSDL (giây).
+    airspace_poll_s: float = 0.25
+    # Vai trò chỉ được cho phép cất cánh khi có ca trực đang hiệu lực (Đặc tả Mục 1.1: Trưởng bộ phận "khi trực").
+    duty_required_roles: list[str] = ["corridor_head"]

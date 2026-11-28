@@ -32,6 +32,9 @@ AT-04. Mã: `b1/identity`, `b1/audit`, `b1/auth.py`.
 | `registry.verify` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |  |
 | `conformance.record` (MFA) | ✓ |  |  |  | ✓ |  |  |  |  |  |  |
 | `province.submit` |  |  |  |  |  |  |  |  |  |  | ✓ |
+| `airspace.read` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |
+| `airspace.manage` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |  |
+| `duty.manage` (MFA) | ✓ |  |  |  |  |  |  |  |  |  |  |
 
 Nguồn: `b1/identity/roles.py`. AT-04 kiểm dòng `flight.clear_takeoff` với mọi vai trò
 (`tests/test_at04_takeoff_clearance.py`).
@@ -49,8 +52,9 @@ Nguồn: `b1/identity/roles.py`. AT-04 kiểm dòng `flight.clear_takeoff` với
 
 ## Việc còn mở
 
-1. **"Khi trực":** Đặc tả ghi Trưởng bộ phận cho phép cất cánh "khi trực". Bản này cho Trưởng bộ phận quyền mọi lúc;
-   cần lịch trực (ai trực ca nào) để siết lại. Đề xuất làm ở bước 3 cùng danh mục kiểm tra và ký điện tử.
+1. **"Khi trực"** (đã làm ở bước 3): Trưởng bộ phận chỉ cho phép cất cánh khi có ca trực đang hiệu lực
+   (`/v1/duty/shifts`, thông số `B1_DUTY_REQUIRED_ROLES`). Cán bộ an toàn bay trực ban chưa bị đòi ca, vì vai trò đã là trực
+   ban; thêm `duty_safety_officer` vào thông số nếu cần siết. Xem `docs/airspace-and-clearance.md`.
 2. **Vận hành:** tài khoản CSDL của ứng dụng chỉ được `INSERT, SELECT` trên `audit.audit_log`; chủ sở hữu bảng là tài
    khoản khác. Định kỳ công bố mã băm đầu chuỗi ra ngoài hệ thống (ví dụ in vào báo cáo tháng) để phát hiện cả trường
    hợp ghi lại toàn bộ chuỗi.

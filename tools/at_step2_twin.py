@@ -1,5 +1,9 @@
 """Chạy AT-01 và AT-04 trên bản sao số, qua API HTTP của một B1 đang chạy, xuất biên bản JSON và Markdown.
 
+Ghi chú: script này chạy trên mã bước 2 (commit fadb39a) và đã cho biên bản docs/acceptance/step2-at01-at04.md. Từ bước 3,
+cho phép cất cánh cần khối đã kích hoạt, danh mục kiểm tra và đăng nhập lại để ký, nên phần AT-04 của script này không chạy
+lại được trên mã mới; tools/at_step3_twin.py chạy lại cho phép cất cánh theo luồng mới, còn tests/ kiểm AT-04 với mọi vai trò.
+
 Bản sao số cung cấp đội phương tiện mô phỏng (`twin.sim`, UAS ID dạng SIMnnnnB1TN) và thời gian bay hết Khối 1.
 Mỗi nhà khai thác mô phỏng có hồ sơ thiếu đúng một điều kiện chặn (Đặc tả Mục 4.3, F-01), cộng một nhà khai thác hồ sơ
 đầy đủ làm đối chứng. Kịch bản:

@@ -9,20 +9,20 @@ import pytest
 from b1.identity.roles import Role
 
 ALLOWED = {Role.CORRIDOR_HEAD, Role.DUTY_SAFETY_OFFICER}
+BODY = {**{k: {"ok": True} for k in ("weather", "ris_stations", "network", "conformance_monitoring", "emergency_plan")},
+        "confirm": True}
 
 
 @pytest.fixture()
-def flight(client, make_user):
-    _, head = make_user(Role.CORRIDOR_HEAD)
-    r = client.post("/v1/flights", json={"request_ref": "HL-20270105-0001", "uas_id": "SIM0001B1TN"}, headers=head)
-    assert r.status_code == 201, r.text
-    return r.json()["id"]
+def flight(ready_flight):
+    return ready_flight()
 
 
 @pytest.mark.parametrize("role", list(Role), ids=lambda r: r.value)
-def test_only_two_roles_can_clear_takeoff(client, app, make_user, flight, role):
+def test_only_two_roles_can_clear_takeoff(client, app, make_user, put_on_duty, flight, role):
     uid, h = make_user(role)
-    r = client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h)
+    put_on_duty(uid, role.value)  # có ca trực cũng không thay được quyền
+    r = client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h, json=BODY)
     if role in ALLOWED:
         assert r.status_code == 200, r.text
         assert r.json()["state"] == "cleared" and r.json()["takeoff_cleared_by"] == str(uid)
@@ -37,12 +37,12 @@ def test_only_two_roles_can_clear_takeoff(client, app, make_user, flight, role):
 
 def test_user_without_roles_is_denied(client, make_user, flight):
     _, h = make_user()
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h).status_code == 403
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h, json=BODY).status_code == 403
 
 
 def test_allowed_role_without_mfa_is_denied(client, app, make_user, flight):
     _, h = make_user(Role.DUTY_SAFETY_OFFICER, mfa=False)
-    r = client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h)
+    r = client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h, json=BODY)
     assert r.status_code == 403 and "đa yếu tố" in r.json()["detail"]
 
 
@@ -51,21 +51,21 @@ def test_expired_or_disabled_account_is_denied(client, make_user, flight):
 
     _, h1 = make_user(Role.CORRIDOR_HEAD, expires_at=dt.datetime(2020, 1, 1, tzinfo=dt.timezone.utc))
     _, h2 = make_user(Role.CORRIDOR_HEAD, status="disabled")
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h1).status_code == 403
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h2).status_code == 403
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h1, json=BODY).status_code == 403
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h2, json=BODY).status_code == 403
 
 
 def test_cannot_clear_twice(client, make_user, flight):
     _, h = make_user(Role.DUTY_SAFETY_OFFICER)
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h).status_code == 200
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h).status_code == 409
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h, json=BODY).status_code == 200
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers=h, json=BODY).status_code == 409
 
 
 def test_token_checks(client, make_token, make_user, flight):
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance").status_code == 401
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", json=BODY).status_code == 401
     bad_iss = make_token("x", issuer="https://evil.example")
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers={"Authorization": f"Bearer {bad_iss}"}).status_code == 401
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers={"Authorization": f"Bearer {bad_iss}"}, json=BODY).status_code == 401
     expired = make_token("x", ttl=-120)
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers={"Authorization": f"Bearer {expired}"}).status_code == 401
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers={"Authorization": f"Bearer {expired}"}, json=BODY).status_code == 401
     unknown = make_token("not-provisioned")
-    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers={"Authorization": f"Bearer {unknown}"}).status_code == 403
+    assert client.post(f"/v1/flights/{flight}/takeoff-clearance", headers={"Authorization": f"Bearer {unknown}"}, json=BODY).status_code == 403

@@ -1900,50 +1900,6 @@
     }
    }
   },
-  "/v1/flights": {
-   "post": {
-    "tags": [
-     "Chuyến bay"
-    ],
-    "summary": "Create Flight",
-    "description": "Tạm thời: bước 2c sẽ tạo chuyến từ yêu cầu bay đã được xếp lịch.",
-    "operationId": "create_flight_v1_flights_post",
-    "requestBody": {
-     "content": {
-      "application/json": {
-       "schema": {
-        "$ref": "#/components/schemas/FlightIn"
-       }
-      }
-     },
-     "required": true
-    },
-    "responses": {
-     "201": {
-      "description": "Successful Response",
-      "content": {
-       "application/json": {
-        "schema": {
-         "additionalProperties": true,
-         "type": "object",
-         "title": "Response Create Flight V1 Flights Post"
-        }
-       }
-      }
-     },
-     "422": {
-      "description": "Validation Error",
-      "content": {
-       "application/json": {
-        "schema": {
-         "$ref": "#/components/schemas/HTTPValidationError"
-        }
-       }
-      }
-     }
-    }
-   }
-  },
   "/v1/flights/{flight_id}": {
    "get": {
     "tags": [
@@ -1995,8 +1951,63 @@
      "Chuyến bay"
     ],
     "summary": "Clear Takeoff",
-    "description": "F-04: chỉ Cán bộ an toàn bay trực ban và Trưởng bộ phận, có MFA. Không phải phép bay (Đặc tả Mục 1).",
+    "description": "F-04: chỉ Cán bộ an toàn bay trực ban và Trưởng bộ phận (khi trực), có MFA; danh mục kiểm tra; ký điện tử.\n\nKhông phải phép bay (Đặc tả Mục 1). Bản ghi đã ký đọc lại ở GET /v1/flights/{id}/clearance.",
     "operationId": "clear_takeoff_v1_flights__flight_id__takeoff_clearance_post",
+    "parameters": [
+     {
+      "name": "flight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Flight Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ClearanceIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Clear Takeoff V1 Flights  Flight Id  Takeoff Clearance Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/flights/{flight_id}/clearance": {
+   "get": {
+    "tags": [
+     "Chuyến bay"
+    ],
+    "summary": "Get Clearance",
+    "operationId": "get_clearance_v1_flights__flight_id__clearance_get",
     "parameters": [
      {
       "name": "flight_id",
@@ -2017,8 +2028,876 @@
         "schema": {
          "type": "object",
          "additionalProperties": true,
-         "title": "Response Clear Takeoff V1 Flights  Flight Id  Takeoff Clearance Post"
+         "title": "Response Get Clearance V1 Flights  Flight Id  Clearance Get"
         }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/duty/shifts": {
+   "post": {
+    "tags": [
+     "Lịch trực"
+    ],
+    "summary": "Create Shift",
+    "operationId": "create_shift_v1_duty_shifts_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ShiftIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Create Shift V1 Duty Shifts Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Lịch trực"
+    ],
+    "summary": "List Shifts",
+    "operationId": "list_shifts_v1_duty_shifts_get",
+    "parameters": [
+     {
+      "name": "at",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "At"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Shifts V1 Duty Shifts Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/duty/shifts/{shift_id}/cancel": {
+   "post": {
+    "tags": [
+     "Lịch trực"
+    ],
+    "summary": "Cancel Shift",
+    "operationId": "cancel_shift_v1_duty_shifts__shift_id__cancel_post",
+    "parameters": [
+     {
+      "name": "shift_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Shift Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Cancel Shift V1 Duty Shifts  Shift Id  Cancel Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/blocks": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "List Blocks",
+    "operationId": "list_blocks_v1_airspace_blocks_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response List Blocks V1 Airspace Blocks Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/blocks/{block_id}/vertical": {
+   "patch": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Set Vertical",
+    "description": "Tầng độ cao khai thác của khối (D3 chưa chốt; mặc định 20–150 m so với mặt đất). Áp cho kế hoạch lập sau đó.",
+    "operationId": "set_vertical_v1_airspace_blocks__block_id__vertical_patch",
+    "parameters": [
+     {
+      "name": "block_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Block Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VerticalIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Set Vertical V1 Airspace Blocks  Block Id  Vertical Patch"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/constraints": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "List Constraints",
+    "operationId": "list_constraints_v1_airspace_constraints_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response List Constraints V1 Airspace Constraints Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/state": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "State",
+    "operationId": "state_v1_airspace_state_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response State V1 Airspace State Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/geofence": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Geofence",
+    "operationId": "geofence_v1_airspace_geofence_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Geofence V1 Airspace Geofence Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations": {
+   "post": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Create Activation",
+    "operationId": "create_activation_v1_airspace_activations_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ActivationIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Create Activation V1 Airspace Activations Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "List Activations",
+    "operationId": "list_activations_v1_airspace_activations_get",
+    "parameters": [
+     {
+      "name": "start",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Start"
+      }
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "End"
+      }
+     },
+     {
+      "name": "block_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Block Id"
+      }
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "State"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Activations V1 Airspace Activations Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/plan": {
+   "post": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Plan Day",
+    "description": "Lập kế hoạch kích hoạt cho mọi chuyến đã xếp lịch trong ngày (giờ Việt Nam), mỗi khối mỗi khung giờ một kế hoạch.",
+    "operationId": "plan_day_v1_airspace_activations_plan_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PlanIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Plan Day V1 Airspace Activations Plan Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/{activation_id}": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Get Activation",
+    "operationId": "get_activation_v1_airspace_activations__activation_id__get",
+    "parameters": [
+     {
+      "name": "activation_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Activation Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Activation V1 Airspace Activations  Activation Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/{activation_id}/package": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Get Package",
+    "description": "Gói dữ liệu kích hoạt: văn bản cho công văn, GeoJSON, ED-269, hoặc nội dung chuẩn (json). Mã băm ở X-Package-SHA256.",
+    "operationId": "get_package_v1_airspace_activations__activation_id__package_get",
+    "parameters": [
+     {
+      "name": "activation_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Activation Id"
+      }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "text",
+        "geojson",
+        "ed269",
+        "json"
+       ],
+       "type": "string",
+       "default": "text",
+       "title": "Format"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/{activation_id}/coordination": {
+   "post": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Coordinate",
+    "operationId": "coordinate_v1_airspace_activations__activation_id__coordination_post",
+    "parameters": [
+     {
+      "name": "activation_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Activation Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CoordinationIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Coordinate V1 Airspace Activations  Activation Id  Coordination Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/{activation_id}/activate": {
+   "post": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Activate",
+    "operationId": "activate_v1_airspace_activations__activation_id__activate_post",
+    "parameters": [
+     {
+      "name": "activation_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Activation Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Activate V1 Airspace Activations  Activation Id  Activate Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/{activation_id}/close": {
+   "post": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Close",
+    "operationId": "close_v1_airspace_activations__activation_id__close_post",
+    "parameters": [
+     {
+      "name": "activation_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Activation Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Close V1 Airspace Activations  Activation Id  Close Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/activations/{activation_id}/cancel": {
+   "post": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Cancel",
+    "operationId": "cancel_v1_airspace_activations__activation_id__cancel_post",
+    "parameters": [
+     {
+      "name": "activation_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Activation Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Cancel V1 Airspace Activations  Activation Id  Cancel Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/events": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Events",
+    "operationId": "events_v1_airspace_events_get",
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 0,
+       "title": "After"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 1000,
+       "default": 200,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Events V1 Airspace Events Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/airspace/stream": {
+   "get": {
+    "tags": [
+     "Vùng trời"
+    ],
+    "summary": "Stream",
+    "description": "Luồng Server-Sent Events của trạng thái vùng trời. Trình duyệt đọc bằng fetch (gửi được tiêu đề Authorization).",
+    "operationId": "stream_v1_airspace_stream_get",
+    "parameters": [
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "After"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
        }
       }
      },
@@ -2057,10 +2936,59 @@
      }
     }
    }
+  },
+  "/v1/signing-keys": {
+   "get": {
+    "tags": [
+     "Chung"
+    ],
+    "summary": "Signing Keys",
+    "description": "Khoá công khai của B1 (JWKS) để kiểm chữ ký bản ghi cho phép cất cánh.",
+    "operationId": "signing_keys_v1_signing_keys_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Signing Keys V1 Signing Keys Get"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
   "schemas": {
+   "ActivationIn": {
+    "properties": {
+     "block_id": {
+      "type": "string",
+      "title": "Block Id"
+     },
+     "starts_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Starts At"
+     },
+     "ends_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Ends At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "block_id",
+     "starts_at",
+     "ends_at"
+    ],
+    "title": "ActivationIn"
+   },
    "AircraftIn": {
     "properties": {
      "uas_id": {
@@ -2310,6 +3238,78 @@
     ],
     "title": "ApplicationIn"
    },
+   "CheckItem": {
+    "properties": {
+     "ok": {
+      "type": "boolean",
+      "title": "Ok"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "ok"
+    ],
+    "title": "CheckItem"
+   },
+   "ClearanceIn": {
+    "properties": {
+     "weather": {
+      "$ref": "#/components/schemas/CheckItem"
+     },
+     "ris_stations": {
+      "$ref": "#/components/schemas/CheckItem"
+     },
+     "network": {
+      "$ref": "#/components/schemas/CheckItem"
+     },
+     "conformance_monitoring": {
+      "$ref": "#/components/schemas/CheckItem"
+     },
+     "emergency_plan": {
+      "$ref": "#/components/schemas/CheckItem"
+     },
+     "confirm": {
+      "type": "boolean",
+      "const": true,
+      "title": "Confirm",
+      "description": "Người cho phép xác nhận đã kiểm tra và ký"
+     },
+     "statement": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Statement"
+     }
+    },
+    "type": "object",
+    "required": [
+     "weather",
+     "ris_stations",
+     "network",
+     "conformance_monitoring",
+     "emergency_plan",
+     "confirm"
+    ],
+    "title": "ClearanceIn"
+   },
    "ConformanceIn": {
     "properties": {
      "test": {
@@ -2366,6 +3366,59 @@
      "tested_at"
     ],
     "title": "ConformanceIn"
+   },
+   "CoordinationIn": {
+    "properties": {
+     "result": {
+      "type": "string",
+      "enum": [
+       "approved",
+       "rejected"
+      ],
+      "title": "Result"
+     },
+     "package_sha256": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "title": "Package Sha256",
+      "description": "Mã băm của gói đã gửi đi hiệp đồng"
+     },
+     "reference": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Reference",
+      "description": "Số công văn hoặc số điện hiệp đồng"
+     },
+     "counterpart": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Counterpart",
+      "description": "Cơ quan, người hiệp đồng"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "result",
+     "package_sha256",
+     "reference",
+     "counterpart"
+    ],
+    "title": "CoordinationIn"
    },
    "CustomerIn": {
     "properties": {
@@ -2600,34 +3653,6 @@
     ],
     "title": "DocumentIn"
    },
-   "FlightIn": {
-    "properties": {
-     "request_ref": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Request Ref"
-     },
-     "uas_id": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Uas Id"
-     }
-    },
-    "type": "object",
-    "title": "FlightIn"
-   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -2746,6 +3771,20 @@
     ],
     "title": "PilotRef"
    },
+   "PlanIn": {
+    "properties": {
+     "day": {
+      "type": "string",
+      "format": "date",
+      "title": "Day"
+     }
+    },
+    "type": "object",
+    "required": [
+     "day"
+    ],
+    "title": "PlanIn"
+   },
    "RequestBody": {
     "properties": {
      "aircraft_id": {
@@ -2837,6 +3876,41 @@
      "role"
     ],
     "title": "RoleIn"
+   },
+   "ShiftIn": {
+    "properties": {
+     "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "User Id"
+     },
+     "role": {
+      "type": "string",
+      "enum": [
+       "corridor_head",
+       "duty_safety_officer"
+      ],
+      "title": "Role"
+     },
+     "starts_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Starts At"
+     },
+     "ends_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Ends At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "user_id",
+     "role",
+     "starts_at",
+     "ends_at"
+    ],
+    "title": "ShiftIn"
    },
    "SlotRef": {
     "properties": {
@@ -2998,6 +4072,46 @@
      "decision"
     ],
     "title": "VerifyIn"
+   },
+   "VerticalIn": {
+    "properties": {
+     "floor_m": {
+      "type": "number",
+      "minimum": 0.0,
+      "title": "Floor M"
+     },
+     "floor_ref": {
+      "type": "string",
+      "enum": [
+       "AGL",
+       "AMSL",
+       "WGS84"
+      ],
+      "title": "Floor Ref",
+      "default": "AGL"
+     },
+     "ceiling_m": {
+      "type": "number",
+      "exclusiveMinimum": 0.0,
+      "title": "Ceiling M"
+     },
+     "ceiling_ref": {
+      "type": "string",
+      "enum": [
+       "AGL",
+       "AMSL",
+       "WGS84"
+      ],
+      "title": "Ceiling Ref",
+      "default": "AGL"
+     }
+    },
+    "type": "object",
+    "required": [
+     "floor_m",
+     "ceiling_m"
+    ],
+    "title": "VerticalIn"
    }
   },
   "securitySchemes": {

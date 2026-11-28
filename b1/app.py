@@ -4,24 +4,28 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from b1.airspace.api import router as airspace_router
+from b1.airspace.service import AirspaceService
 from b1.audit.api import router as audit_router
 from b1.audit.service import AuditService
 from b1.auth import TokenVerifier
 from b1.config import Settings
-from b1.db import init_db, make_engine, make_sessionmaker
-from b1.identity.api import router as identity_router
-from b1.operations.api import router as operations_router
 from b1.connectors import i02
-from b1.registry.api import router as registry_router
-from b1.registry.service import RegistryService
-from b1.operations.service import OperationsService
-from b1.scheduling.api import router as scheduling_router
-from b1.scheduling.service import SchedulingService
+from b1.db import init_db, make_engine, make_sessionmaker
+from b1.gateway.api import router as gateway_router
+from b1.identity.api import router as identity_router
 from b1.notify.api import router as notify_router
 from b1.notify.service import NotifyService
+from b1.operations.api import duty_router
+from b1.operations.api import router as operations_router
+from b1.operations.service import OperationsService
 from b1.portal.routes import STATIC as PORTAL_STATIC
 from b1.portal.routes import router as portal_router
-from b1.gateway.api import router as gateway_router
+from b1.registry.api import router as registry_router
+from b1.registry.service import RegistryService
+from b1.scheduling.api import router as scheduling_router
+from b1.scheduling.service import SchedulingService
+from b1.signing import Signer
 
 DISCLAIMERS = [
     "B1 không thay thế hệ thống quản lý bay quốc gia.",
@@ -48,6 +52,10 @@ def create_app(settings: Settings | None = None, *, create_schema: bool = True) 
     app.state.notify = NotifyService(app.state.sessionmaker)
     app.state.scheduling = SchedulingService(app.state.sessionmaker, app.state.registry, app.state.operations, app.state.audit,
                                              app.state.notify)
+    app.state.airspace = AirspaceService(app.state.sessionmaker, app.state.audit)
+    if create_schema:
+        app.state.airspace.load_config(settings.corridor_dir)
+    app.state.signer = Signer(settings.signing_key_file)
     app.include_router(identity_router)
     app.include_router(audit_router)
     app.include_router(registry_router)
@@ -57,9 +65,16 @@ def create_app(settings: Settings | None = None, *, create_schema: bool = True) 
     app.include_router(portal_router)
     app.mount("/portal/static", StaticFiles(directory=PORTAL_STATIC), name="portal-static")
     app.include_router(operations_router)
+    app.include_router(duty_router)
+    app.include_router(airspace_router)
 
     @app.get("/v1/disclaimers", tags=["Chung"])
     def disclaimers() -> dict:
         return {"items": DISCLAIMERS}
+
+    @app.get("/v1/signing-keys", tags=["Chung"])
+    def signing_keys() -> dict:
+        """Khoá công khai của B1 (JWKS) để kiểm chữ ký bản ghi cho phép cất cánh."""
+        return app.state.signer.jwks()
 
     return app

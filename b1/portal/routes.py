@@ -20,6 +20,17 @@ def portal_index() -> FileResponse:
     return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-store"})
 
 
+@router.get("/ops")
+def ops_redirect() -> RedirectResponse:
+    return RedirectResponse("/ops/")
+
+
+@router.get("/ops/")
+def ops_index() -> FileResponse:
+    """Trang vận hành cho cán bộ: bản đồ trạng thái khối, kế hoạch kích hoạt, gói dữ liệu, hiệp đồng (F-03)."""
+    return FileResponse(STATIC / "ops.html", headers={"Cache-Control": "no-store"})
+
+
 @router.get("/portal/config.json")
 def portal_config(request: Request) -> dict:
     s = request.app.state.settings

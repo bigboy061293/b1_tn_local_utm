@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://b1.example.invalid/schemas/ed269-uaszone.schema.json",
+  "title": "Vùng địa lý UAS theo cấu trúc ED-269 (bản kiểm tra của B1)",
+  "description": "Viết theo cấu trúc công khai của mô hình UASZone (EUROCAE ED-269, Quy định EU 2019/947). Chưa đối chiếu văn bản chuẩn đầy đủ; rà lại khi có bản chuẩn và quy chế phối hợp I-05.",
+  "type": "object",
+  "required": ["title", "features"],
+  "properties": {
+    "title": {"type": "string"},
+    "description": {"type": "string"},
+    "features": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/UASZone"}}
+  },
+  "$defs": {
+    "VerticalReference": {"enum": ["AGL", "AMSL", "WGS84"]},
+    "UASZone": {
+      "type": "object",
+      "required": ["identifier", "country", "type", "restriction", "zoneAuthority", "geometry"],
+      "properties": {
+        "identifier": {"type": "string", "minLength": 1, "maxLength": 7},
+        "country": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "name": {"type": "string", "maxLength": 200},
+        "type": {"enum": ["COMMON", "CUSTOMIZED"]},
+        "restriction": {"enum": ["PROHIBITED", "REQ_AUTHORISATION", "CONDITIONAL", "NO_RESTRICTION"]},
+        "restrictionConditions": {"type": "array", "items": {"type": "string"}},
+        "region": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "reason": {"type": "array", "maxItems": 9, "items": {"enum": ["AIR_TRAFFIC", "SENSITIVE", "PRIVACY", "POPULATION", "NATURE", "NOISE", "FOREIGN_TERRITORY", "EMERGENCY", "OTHER"]}},
+        "otherReasonInfo": {"type": "string", "maxLength": 30},
+        "regulationExemption": {"enum": ["YES", "NO"]},
+        "uSpaceClass": {"enum": ["EUROCONTROL", "CORUS"]},
+        "message": {"type": "string", "maxLength": 200},
+        "zoneAuthority": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "required": ["name", "purpose"],
+            "properties": {
+              "name": {"type": "string", "maxLength": 200},
+              "service": {"type": "string", "maxLength": 200},
+              "email": {"type": "string"},
+              "contactName": {"type": "string"},
+              "siteURL": {"type": "string"},
+              "phone": {"type": "string"},
+              "purpose": {"enum": ["AUTHORIZATION", "NOTIFICATION", "INFORMATION"]},
+              "intervalBefore": {"type": "string", "pattern": "^P(\\d+D)?(T(\\d+H)?(\\d+M)?)?$"}
+            }
+          }
+        },
+        "applicability": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "permanent": {"enum": ["YES", "NO"]},
+              "startDateTime": {"type": "string", "format": "date-time"},
+              "endDateTime": {"type": "string", "format": "date-time"},
+              "schedule": {"type": "array"}
+            }
+          }
+        },
+        "geometry": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["uomDimensions", "lowerLimit", "lowerVerticalReference", "upperLimit", "upperVerticalReference", "horizontalProjection"],
+            "properties": {
+              "uomDimensions": {"enum": ["M", "FT"]},
+              "lowerLimit": {"type": "integer"},
+              "lowerVerticalReference": {"$ref": "#/$defs/VerticalReference"},
+              "upperLimit": {"type": "integer"},
+              "upperVerticalReference": {"$ref": "#/$defs/VerticalReference"},
+              "horizontalProjection": {
+                "type": "object", "required": ["type", "coordinates"],
+                "properties": {
+                  "type": {"const": "Polygon"},
+                  "coordinates": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 4, "items": {"type": "array", "minItems": 2, "maxItems": 3, "items": {"type": "number"}}}}
+                }
+              }
+            }
+          }
+        },
+        "extendedProperties": {"type": "object"}
+      }
+    }
+  }
+}

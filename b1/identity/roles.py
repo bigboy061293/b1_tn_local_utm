@@ -34,6 +34,9 @@ class Perm(str, enum.Enum):
     REGISTRY_VERIFY = "registry.verify"        # xác nhận giấy tờ, thiết bị quản lý hoạt động bay
     CONFORMANCE_RECORD = "conformance.record"  # ghi kết quả CT-1…8
     PROVINCE_SUBMIT = "province.submit"        # I-01: cổng tỉnh gửi hồ sơ
+    AIRSPACE_READ = "airspace.read"            # F-03: xem trạng thái khối, ràng buộc, rào địa lý
+    AIRSPACE_MANAGE = "airspace.manage"        # F-03: lập kế hoạch kích hoạt, ghi hiệp đồng, kích hoạt, đóng khối
+    DUTY_MANAGE = "duty.manage"                # lịch trực của Trưởng bộ phận và Cán bộ an toàn bay trực ban
 
 
 R, P = Role, Perm
@@ -54,11 +57,18 @@ GRANTS: dict[Perm, frozenset[Role]] = {
     P.REGISTRY_VERIFY: frozenset({R.CORRIDOR_HEAD}),
     P.CONFORMANCE_RECORD: frozenset({R.CORRIDOR_HEAD, R.FLIGHT_TEST_TECHNICIAN}),
     P.PROVINCE_SUBMIT: frozenset({R.PROVINCE_PORTAL}),
+    # Khách hàng xem được trạng thái khối và rào địa lý (cần cho chuyến của mình); chi tiết gói kích hoạt cần FLIGHT_READ_ALL.
+    P.AIRSPACE_READ: frozenset(_STAFF_READ | {R.REGULATOR, R.LOW_ALTITUDE_COORDINATION, R.AUDITOR,
+                                              R.CUSTOMER_OPERATOR, R.CUSTOMER_TRAINING}),
+    # Kích hoạt, đóng từng khối sau hiệp đồng: thuộc việc điều phối của Trưởng bộ phận (Đặc tả Mục 1.1, F-03).
+    P.AIRSPACE_MANAGE: frozenset({R.CORRIDOR_HEAD}),
+    P.DUTY_MANAGE: frozenset({R.CORRIDOR_HEAD}),
 }
 
 # Thao tác đặc quyền: luôn đòi xác thực đa yếu tố.
 PRIVILEGED: frozenset[Perm] = frozenset({P.FLIGHT_CLEAR_TAKEOFF, P.STOP_ISSUE, P.SCHEDULE_MANAGE, P.USER_MANAGE, P.PORTAL_ADMIN,
-                                         P.CUSTOMER_MANAGE, P.REGISTRY_VERIFY, P.CONFORMANCE_RECORD})
+                                         P.CUSTOMER_MANAGE, P.REGISTRY_VERIFY, P.CONFORMANCE_RECORD,
+                                         P.AIRSPACE_MANAGE, P.DUTY_MANAGE})
 
 
 def allowed(roles: frozenset[Role] | set[Role], perm: Perm) -> bool:
