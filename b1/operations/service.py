@@ -52,3 +52,29 @@ class OperationsService:
             return s.scalar(select(DutyShift.id).where(DutyShift.user_id == user_id, DutyShift.role == role,
                                                       DutyShift.cancelled.is_(False), DutyShift.starts_at <= at,
                                                       DutyShift.ends_at > at).limit(1)) is not None
+
+    def flight(self, flight_id: uuid.UUID) -> dict | None:
+        with self.sm() as s:
+            f = s.get(Flight, flight_id)
+            if f is None:
+                return None
+            return {"id": f.id, "request_ref": f.request_ref, "uas_id": f.uas_id, "customer_id": f.customer_id,
+                    "starts_at": f.starts_at, "ends_at": f.ends_at, "block_ids": f.block_ids or [], "bvlos": bool(f.bvlos),
+                    "state": f.state}
+
+    def transition(self, flight_id: uuid.UUID, from_states: tuple[str, ...], to: str) -> bool:
+        """Đổi trạng thái chuyến khi telemetry cho thấy cất cánh (armed) hoặc hạ cánh. Trả False nếu không ở trạng thái nguồn."""
+        with self.sm() as s:
+            f = s.get(Flight, flight_id, with_for_update=True)
+            if f is None or f.state not in from_states:
+                return False
+            f.state = to
+            f.version += 1
+            s.commit()
+            return True
+
+    def in_states(self, states: tuple[str, ...]) -> list[dict]:
+        with self.sm() as s:
+            return [{"id": f.id, "uas_id": f.uas_id, "state": f.state, "block_ids": f.block_ids or [], "request_ref": f.request_ref,
+                     "customer_id": f.customer_id, "starts_at": f.starts_at, "ends_at": f.ends_at}
+                    for f in s.scalars(select(Flight).where(Flight.state.in_(states)))]

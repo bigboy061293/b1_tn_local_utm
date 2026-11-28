@@ -19,6 +19,7 @@ class Role(str, enum.Enum):
     LOW_ALTITUDE_COORDINATION = "low_altitude_coordination"  # Bộ phận điều phối bay tầm thấp
     AUDITOR = "auditor"                                      # Kiểm toán
     PROVINCE_PORTAL = "province_portal"                      # tài khoản máy của cổng đăng ký bay tỉnh (I-01)
+    RIS_STATION = "ris_station"                              # tài khoản máy của máy tính tại trạm RIS (I-06)
 
 
 class Perm(str, enum.Enum):
@@ -37,6 +38,8 @@ class Perm(str, enum.Enum):
     AIRSPACE_READ = "airspace.read"            # F-03: xem trạng thái khối, ràng buộc, rào địa lý
     AIRSPACE_MANAGE = "airspace.manage"        # F-03: lập kế hoạch kích hoạt, ghi hiệp đồng, kích hoạt, đóng khối
     DUTY_MANAGE = "duty.manage"                # lịch trực của Trưởng bộ phận và Cán bộ an toàn bay trực ban
+    STATION_SUBMIT = "station.submit"          # I-06: trạm RIS gửi bản ghi
+    ALERT_ACK = "alert.ack"                    # F-06: xác nhận, đóng cảnh báo
 
 
 R, P = Role, Perm
@@ -63,12 +66,15 @@ GRANTS: dict[Perm, frozenset[Role]] = {
     # Kích hoạt, đóng từng khối sau hiệp đồng: thuộc việc điều phối của Trưởng bộ phận (Đặc tả Mục 1.1, F-03).
     P.AIRSPACE_MANAGE: frozenset({R.CORRIDOR_HEAD}),
     P.DUTY_MANAGE: frozenset({R.CORRIDOR_HEAD}),
+    P.STATION_SUBMIT: frozenset({R.RIS_STATION}),
+    # Người trực màn hình vận hành xử lý cảnh báo: Cán bộ an toàn bay trực ban và Trưởng bộ phận (như F-04, F-07).
+    P.ALERT_ACK: frozenset({R.CORRIDOR_HEAD, R.DUTY_SAFETY_OFFICER}),
 }
 
 # Thao tác đặc quyền: luôn đòi xác thực đa yếu tố.
 PRIVILEGED: frozenset[Perm] = frozenset({P.FLIGHT_CLEAR_TAKEOFF, P.STOP_ISSUE, P.SCHEDULE_MANAGE, P.USER_MANAGE, P.PORTAL_ADMIN,
                                          P.CUSTOMER_MANAGE, P.REGISTRY_VERIFY, P.CONFORMANCE_RECORD,
-                                         P.AIRSPACE_MANAGE, P.DUTY_MANAGE})
+                                         P.AIRSPACE_MANAGE, P.DUTY_MANAGE, P.ALERT_ACK})
 
 
 def allowed(roles: frozenset[Role] | set[Role], perm: Perm) -> bool:
