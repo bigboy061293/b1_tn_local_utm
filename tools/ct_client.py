@@ -65,7 +65,7 @@ def run(a: argparse.Namespace) -> dict:
     for f, at in flag_at.items():  # cờ phải bật lúc đang gửi thời gian thực, không rơi vào đoạn ngắt hay đoạn tải
         if disc[0] - 3 < at < disc[1] or load[0] - 3 < at < load[1]:
             raise SystemExit(f"lịch thử chồng nhau: cờ {f} ở giây {at - t0:.0f} trùng đoạn ngắt/chạy tải")
-    stats = {"sent": 0, "accepted": 0, "rejected": 0, "errors": 0, "backfilled": 0, "load_batches": 0}
+    stats = {"sent": 0, "accepted": 0, "rejected": 0, "errors": 0, "backfilled": 0, "load_batches": 0, "load_throttled": 0}
     buffer: list[dict] = []
     stop_load = threading.Event()
 
@@ -73,13 +73,16 @@ def run(a: argparse.Namespace) -> dict:
         junk = [sample(a.session, a.uas_id, t0 + i / 10, ref, []) for i in range(200)]
         while not stop_load.is_set():
             try:
-                loadc.post(f"{url}/backfill", json={"samples": junk})
+                r = loadc.post(f"{url}/backfill", json={"samples": junk})
                 stats["load_batches"] += 1
+                if r.status_code == 429:  # B1 giới hạn gửi bù: lùi theo Retry-After như bộ phát thật phải làm
+                    stats["load_throttled"] += 1
+                    stop_load.wait(float(r.headers.get("retry-after", "1")))
             except httpx.HTTPError:
                 pass
 
     mark("static_start", t0)
-    k, loaded, reconnected = 0, False, False
+    k, loaded, reconnected, backfill_after = 0, False, False, 0.0
     while True:
         t = t0 + k * 0.1
         if t > t0 + a.duration:
@@ -114,10 +117,18 @@ def run(a: argparse.Namespace) -> dict:
                 stats["rejected"] += len(r.json().get("rejected", []))
             except (httpx.HTTPError, ValueError):
                 stats["errors"] += 1
-            if buffer and reconnected:  # gửi bù từng lô 200 mẫu xen giữa mẫu thời gian thực
-                chunk, buffer[:] = buffer[:200], buffer[200:]
-                r = c.post(f"{url}/backfill", json={"samples": chunk})
-                stats["backfilled"] += r.json().get("accepted", 0)
+            if buffer and reconnected and time.time() >= backfill_after:  # gửi bù từng lô 200 mẫu xen giữa mẫu thời gian thực
+                chunk = buffer[:200]
+                try:
+                    r = c.post(f"{url}/backfill", json={"samples": chunk})
+                    if r.status_code == 429:
+                        backfill_after = time.time() + float(r.headers.get("retry-after", "1"))
+                    else:
+                        r.raise_for_status()
+                        stats["backfilled"] += r.json().get("accepted", 0)
+                        buffer[:] = buffer[200:]
+                except (httpx.HTTPError, ValueError):
+                    stats["errors"] += 1
         k += 1
     mark("static_end", t0 + a.duration)
     return stats

@@ -134,9 +134,14 @@ def evaluate(samples: list[dict], rejected: int, alerts: list[dict], marks: dict
 
     if "CT-7" in tests:
         if "load_start" in marks and "load_end" in marks:
-            ts = [t for t in all_ts if marks["load_start"] <= t <= marks["load_end"]]
-            c = _cadence(ts)
-            put("CT-7", _cadence_ok(c, min(60.0, marks["load_end"] - marks["load_start"])), c)
+            # Chấm cả nhãn nguồn lẫn giờ B1 nhận: bộ phát bị nghẽn vẫn đặt nhãn nguồn đều 10 Hz nhưng mẫu tới muộn và dồn cục.
+            win = [x for x in live if marks["load_start"] <= x["t_source"] <= marks["load_end"]]
+            need = min(60.0, marks["load_end"] - marks["load_start"])
+            c = _cadence(sorted(x["t_source"] for x in win))
+            arr = _cadence(sorted(x["t_receive"] for x in win))
+            lag = sorted(x["t_receive"] - x["t_source"] for x in win)
+            c = {**c, "arrival": arr, "p95_receive_lag_ms": round(1000 * lag[int(0.95 * (len(lag) - 1))], 1) if lag else None}
+            put("CT-7", _cadence_ok(c, need) and _cadence_ok(arr, need), c)
         else:
             put("CT-7", None, {}, "chưa đánh dấu đoạn chạy tải (load_start, load_end)")
 

@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     telemetry_require_scope: bool = True
     # Mẫu có giờ nguồn sớm hơn giờ B1 quá chừng này (giây) bị loại: đồng hồ nguồn chưa đồng bộ.
     telemetry_max_future_s: float = 5.0
+    # Gửi bù (/backfill) tính hạn mức riêng từng chuyến: tốc độ (mẫu/giây) và dung lượng xô.
+    # Vượt thì trả 429 kèm Retry-After, để gửi bù hay tải dồn không chiếm đường của mẫu thời gian thực.
+    backfill_rate_per_s: float = 1000.0
+    backfill_burst: float = 2000.0
     # Hạ cánh: disarmed liên tục chừng này giây (theo giờ nguồn).
     landed_after_disarm_s: float = 10.0
     # Mất telemetry khi đang bay (giây) và chu kỳ kiểm định kỳ.

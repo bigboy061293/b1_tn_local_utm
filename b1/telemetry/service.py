@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import datetime as dt
 import threading
+import time
 import uuid
 from dataclasses import dataclass, field
 
@@ -21,9 +22,9 @@ BACKFILL_STATES = ("cleared", "airborne", "landed", "closed")
 
 
 class IngestError(Exception):
-    def __init__(self, status: int, detail: str):
+    def __init__(self, status: int, detail: str, retry_after: float | None = None):
         super().__init__(detail)
-        self.status, self.detail = status, detail
+        self.status, self.detail, self.retry_after = status, detail, retry_after
 
 
 @dataclass
@@ -52,6 +53,7 @@ class TelemetryService:
         self.lock = threading.Lock()
         self._disarmed_since: dict[uuid.UUID, dt.datetime] = {}
         self._last_live: dict[uuid.UUID, dt.datetime] = {}
+        self._bucket: dict[uuid.UUID, tuple[float, float]] = {}  # chuyến → (số mẫu còn được gửi bù, thời điểm đơn điệu)
 
     # ---------- đích ----------
 
@@ -82,9 +84,25 @@ class TelemetryService:
 
     # ---------- nhận ----------
 
+    def _take_backfill(self, flight_id: uuid.UUID, n: int) -> None:
+        """Xô token cho gửi bù của một chuyến; hết hạn mức thì 429 trước khi tốn công kiểm lược đồ và ghi."""
+        rate, burst = self.s.backfill_rate_per_s, self.s.backfill_burst
+        if rate <= 0:
+            return
+        now = time.monotonic()
+        with self.lock:
+            tokens, at = self._bucket.get(flight_id, (burst, now))
+            tokens = min(burst, tokens + (now - at) * rate)
+            if tokens < n:
+                self._bucket[flight_id] = (tokens, now)
+                raise IngestError(429, "vượt hạn mức gửi bù của chuyến, gửi lại sau", retry_after=(n - tokens) / rate)
+            self._bucket[flight_id] = (tokens - n, now)
+
     def ingest(self, t: Target, samples: list, channel: str, backfill: bool = False,
                t_receive: dt.datetime | None = None) -> dict:
         t_receive = t_receive or dt.datetime.now(dt.timezone.utc)
+        if backfill:
+            self._take_backfill(t.id, len(samples))
         rows, rejected = [], []
         for i, x in enumerate(samples):
             errs = schema.errors(x)

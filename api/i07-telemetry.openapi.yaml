@@ -67,6 +67,14 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/BatchAck' }
         '400': { $ref: '#/components/responses/Problem' }
+        '429':
+          description: >-
+            Vượt hạn mức gửi bù của chuyến (mặc định 1000 mẫu/giây, xô 2000 mẫu). Chờ theo Retry-After rồi gửi lại lô đó.
+            Mẫu thời gian thực (/samples) không chịu hạn mức này.
+          headers:
+            Retry-After:
+              schema: { type: integer, minimum: 1 }
+              description: Số giây nên chờ.
   /v1/flights/{flightId}/rejected:
     get:
       operationId: getRejectedSamples

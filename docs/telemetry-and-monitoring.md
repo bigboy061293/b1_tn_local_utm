@@ -31,6 +31,7 @@ Mỗi mẫu đi qua:
 3. **Giờ nguồn**: sớm hơn giờ B1 quá 5 giây là đồng hồ nguồn chưa đồng bộ, bị loại.
 4. **Trạng thái chuyến**: chưa được cho phép cất cánh trả 403; chuyến đã hạ cánh chỉ nhận gửi bù (409 với kênh thời gian thực).
 5. **Khử trùng** theo (`flightId`, `uasId`, `timeSource`): gửi lại, gửi bù trùng không tạo bản ghi mới (`duplicates` trong phản hồi).
+6. **Hạn mức gửi bù** riêng từng chuyến: 1000 mẫu/giây, xô 2000 mẫu (`B1_BACKFILL_RATE_PER_S`, `B1_BACKFILL_BURST`). Vượt thì 429 kèm `Retry-After`, bộ phát chờ rồi gửi lại lô đó. Mẫu thời gian thực không chịu hạn mức này, nên gửi bù dồn dập không làm trễ cảnh báo. Lần chạy đầu trên bản sao số chưa có hạn mức: bốn luồng gửi bù liên tục đã làm mẫu thời gian thực của phiên CT tới trễ tới 19 phút và đẩy độ trễ ghi của các chuyến khác lên 25 giây.
 6. **Ba nhãn thời gian** (D6): `t_source` (nguồn), `t_receive` (B1 nhận), `t_ingest` (ghi vào CSDL, đồng hồ máy chủ CSDL).
 7. **Độ cao**: lưu nguyên giá trị và hệ quy chiếu, kèm độ cao so với mặt đất và so với mực nước biển suy ra. Phương tiện không
    gửi `agl` thì B1 dùng độ cao địa hình một giá trị cho cả hành lang (`B1_TERRAIN_ELEV_M`, mặc định 25 m) và độ cao geoid
@@ -138,7 +139,7 @@ phương tiện, có hiệu lực 12 tháng như ghi tay. Bộ phát tham khảo
 | CT-4 | Đứng yên tại điểm RTK khai khi mở phiên ≥ 10 phút: ≥ 95% mẫu trong 5 m |
 | CT-5 | Cờ c2_lost và geofence_breach đều xuất hiện; mỗi lần bật cờ thành cảnh báo ≤ 2 giây sau giờ nguồn |
 | CT-6 | TLS 1.3 và chứng chỉ khách hợp lệ (tiêu đề của cổng vào); không qua cổng vào thì Kỹ thuật viên xác nhận bằng biên bản |
-| CT-7 | Trong đoạn chạy tải: vẫn ≥ 5 Hz, ≥ 99% khoảng ≤ 300 ms, không khoảng > 2 giây |
+| CT-7 | Trong đoạn chạy tải: vẫn ≥ 5 Hz, ≥ 99% khoảng ≤ 300 ms, không khoảng > 2 giây, xét cả theo nhãn nguồn lẫn theo giờ B1 nhận (bộ phát nghẽn vẫn đặt nhãn nguồn đều nhưng mẫu tới dồn cục) |
 | CT-8 | Sau đoạn ngắt ~60 giây: mẫu thời gian thực đầu tiên ≤ 10 giây; gửi bù lấp đoạn ngắt với nhãn gốc, khoảng lớn nhất ≤ 1 giây |
 
 CT-5 hiện do khách tự tạo tình huống. Khi có dịch vụ thử F-15 tại khu thử RIS-1 thì dịch vụ đó tạo tình huống (Mục 5.3).

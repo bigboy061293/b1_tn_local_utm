@@ -130,7 +130,7 @@ class MonitorService:
     def flight_of_uas(self, uas_id: str) -> uuid.UUID | None:
         with self.lock:
             for fid, st in self.live.items():
-                if st["uas_id"] == uas_id and st.get("state") not in ("landed", "closed", "cancelled"):
+                if st["uas_id"] == uas_id and st.get("state") not in ("landed", "closed", "cancelled", "ct"):
                     return fid
         return None
 
@@ -141,7 +141,7 @@ class MonitorService:
             h = self.history.get(flight_id)
             if not h:
                 return None
-            if h[-1][0] < t - 0.05:
+            if h[-1][0] < t - 0.051:  # 1 ms cho sai số dấu phẩy động của nhãn mili giây
                 return "pending"
             best = min(h, key=lambda x: abs(x[0] - t))
         return best if abs(best[0] - t) <= max_dt else None

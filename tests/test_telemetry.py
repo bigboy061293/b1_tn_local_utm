@@ -84,6 +84,24 @@ def test_dedup_and_backfill_keep_original_timestamps(client, app, flying):
     assert rows[5].t_source == t0 + dt.timedelta(seconds=1)
 
 
+def test_backfill_rate_limited_per_flight(client, app, flying, monkeypatch):
+    """Gửi bù dồn dập bị chặn 429 kèm Retry-After; mẫu thời gian thực không bị hạn mức này."""
+    monkeypatch.setattr(app.state.settings, "backfill_rate_per_s", 100.0)
+    monkeypatch.setattr(app.state.settings, "backfill_burst", 300.0)
+    f = flying()
+    t0 = now() - dt.timedelta(seconds=120)
+    def chunk(k):
+        return [make_sample(f["fid"], f["uas"], t0 + dt.timedelta(milliseconds=100 * (k * 150 + i))) for i in range(150)]
+    assert post(client, f, chunk(0), path="backfill").status_code == 202
+    assert post(client, f, chunk(1), path="backfill").status_code == 202
+    r = post(client, f, chunk(2), path="backfill")
+    assert r.status_code == 429 and int(r.headers["retry-after"]) >= 1
+    live = [make_sample(f["fid"], f["uas"], now() - dt.timedelta(milliseconds=100 * (5 - i))) for i in range(5)]
+    assert post(client, f, live).json()["accepted"] == 5
+    other = flying()  # hạn mức tính riêng từng chuyến
+    assert post(client, other, [make_sample(other["fid"], other["uas"], t0)], path="backfill").status_code == 202
+
+
 def test_authorization(client, app, flying, make_user, onboard):
     f = flying()
     s = [make_sample(f["fid"], f["uas"], now())]

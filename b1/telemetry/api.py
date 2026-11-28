@@ -7,6 +7,7 @@ cổng vào (ingress) đảm nhận, B1 đọc kết quả qua tiêu đề do c�
 from __future__ import annotations
 
 import datetime as dt
+import math
 import uuid
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request
@@ -40,7 +41,8 @@ def customer_of(request: Request, p: Principal) -> uuid.UUID:
 
 
 def _problem(e: IngestError) -> HTTPException:
-    return HTTPException(e.status, e.detail)
+    headers = {"Retry-After": str(max(1, math.ceil(e.retry_after)))} if e.retry_after is not None else None
+    return HTTPException(e.status, e.detail, headers=headers)
 
 
 def tls_info(request: Request) -> dict:

@@ -97,6 +97,14 @@ def test_ct7_load_window_and_ct8_disconnect_backfill():
     assert run(no_bf, marks=marks, params={"min_duration_s": 600})["CT-8"]["passed"] is False
     s2 = stream(n=12_000, gaps=[(150, 153)])
     assert run(s2, marks=marks, params={"min_duration_s": 600})["CT-7"]["passed"] is False
+    # bộ phát nghẽn: nhãn nguồn vẫn đều 10 Hz nhưng mẫu tới dồn cục, cách nhau 5 giây
+    s3 = stream(n=12_000)
+    for x in s3:
+        if 150 <= x["t_source"] - t0 < 250:
+            x["t_receive"] = t0 + 150 + 5 * ((x["t_source"] - t0 - 150) // 5 + 1)
+    r3 = run(s3, marks=marks, params={"min_duration_s": 600})["CT-7"]
+    assert r3["passed"] is False and r3["measured"]["pct_gaps_le_300ms"] == 100.0
+    assert r3["measured"]["arrival"]["max_gap_s"] >= 4.9
 
 
 def test_session_flow_self_check_and_official(client, app, onboard, make_user):

@@ -186,3 +186,19 @@ def test_rid_of_cleared_flight_without_telemetry_is_not_unknown(client, app, fly
     assert not [x for x in app.state.monitor.alerts(kind="RID_UNKNOWN") if x["subject"] == f["uas"]]
     app.state.surveillance._drain_pending(force=True)
     assert app.state.surveillance.reconciliation(f["fid"])["no_telemetry"] == 1
+
+
+def test_rid_goes_to_flight_not_ct_session_of_same_uas(client, app, flying, make_user):
+    """Phiên CT dùng cùng UAS ID với chuyến bay thật: Remote ID phải đối chiếu với chuyến bay, không với phiên CT."""
+    f = flying()
+    t = _fly(client, f)
+    ct = uuid.uuid4()
+    lon, lat = corridor_point(0.0)
+    row = {"uas_id": f["uas"], "lon": lon, "lat": lat, "t_source": now(), "t_receive": now(), "ground_speed": 0.0, "track": 0.0,
+           "c2_state": "ok", "armed": False, "mode": "LOITER", "safety_flags": []}
+    app.state.monitor.on_sample({"id": ct, "block_ids": [], "state": "ct", "ct_session": True}, row)
+    assert app.state.monitor.flight_of_uas(f["uas"]) == f["fid"]
+    lon, lat = corridor_point(3.0)
+    post(client, station(make_user, "RIS-1"), "RIS-1", [rid(t, f["uas"], lon, lat)])
+    _, aud = make_user(Role.AUDITOR)
+    assert client.get(f"/v1/surveillance/flights/{f['fid']}/rid-reconciliation", headers=aud).json()["matched"] == 1
